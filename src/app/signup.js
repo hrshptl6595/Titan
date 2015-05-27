@@ -28,7 +28,12 @@ exports.signup = function(req,res,next) {
         res.status(500).send("Unable to signup!");
       else{
         console.log(result);
-        res.send("Thank you for signing up!");
+        res.writeHead(200, {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        });
+        res.write("Thank you for signing up!");
+        res.end();
       }
     });
   }
