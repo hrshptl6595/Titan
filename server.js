@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var uriUtil = require("mongodb-uri");
 var mapper = require("./src/app/mapper");
 var server = express();
-var port = 8080 || process.env.PORT;
+var port = process.env.PORT || 8080;
 
 var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
                 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
@@ -29,6 +29,9 @@ server
   .use("/login", mapper.login.typeCheck)
   .use("/appointments", mapper.appointments.typeCheck)
   // .use("/", express.static('./src/markup'))
+  .use("/", function(req,res,next) {
+    res.send("Hello World!");
+  })
   .listen(port, function(){
     console.log("Request Passed!");
   });
