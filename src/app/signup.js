@@ -12,6 +12,11 @@ exports.signup = function(req,res,next) {
   console.log(req);
   if(!(req.body.userName && req.body.email && req.body.password))
     res.status(403).send("Incomplete data!");
+  // else if
+  //   user.findOne({"userName": req.body.userName}, function(err, result) {
+  //     if(err) res.status(500).send("oops! error!");
+  //     else if(result) res.send("you have already signed up!");
+  //   });
   else{
     var newUser = new user ({
       userName: req.body.userName,

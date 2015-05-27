@@ -1,23 +1,27 @@
 var user = require("./userModel");
 var jwt = require("jsonwebtoken");
 var mapper = require("./mapper");
+var url = require("url");
+var mailer = require("nodemailer");
 
 exports.typeCheck = function (req,res,next) {
-  if(req.method != "POST")
-    res.status(404).send("Invalid HTTP Method!")
-  else
+  if(req.method == "POST")
     mapper.login.login(req,res,next);
+  else if(req.method == "GET")
+    mapper.login.forgotPassword(req,res,next);
+  else
+    res.status(404).send("Invalid HTTP Method!");
 };
 
 exports.login = function(req,res,next) {
   console.log(req);
-  user.findOne({"userName": req.body.userName}, function(err, user){
+  user.findOne({"userName": req.body.userName}, function(err, result){
     if(err) res.send("oops! error!");
-    else if(!user) res.send("user does not exist!!");
+    else if(!result) res.send("user does not exist!!");
     else{
-      if(user.password!=req.body.password) res.send("incorrect password!");
+      if(result.password!=req.body.password) res.send("incorrect password!");
       else{
-        var token = jwt.sign(user, "moony wormtail padfoot prongs", {expiresInMinutes: 1440});
+        var token = jwt.sign(result, "moony wormtail padfoot prongs", {expiresInMinutes: 1440});
         res.writeHead(200, {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
@@ -30,6 +34,40 @@ exports.login = function(req,res,next) {
       }
     }
   });
+};
+
+exports.forgotPassword = function(req,res,next) {
+  console.log(req);
+  var userName = url.parse(req.url,true).query.userName;
+  console.log(userName);
+  if(!userName)
+    res.send("Please provide your user name!");
+  else {
+    user.findOne({"userName": userName}, function(err, result) {
+      if(err) res.status(500).send("oops! error!");
+      else if(!result) res.status(404).send("Couldn't find you!");
+      else{
+        var smtp = mailer.createTransport("SMTP", {
+          service: "Gmail",
+          auth: {
+            user: "cts.titancompany@gmail.com",
+            pass: "titan@2014"
+          }
+        });
+        var mailOptions = {
+          from: "cts.titancompany@gmail.com",
+          to: result.email,
+          subject: "Password Recovery lol",
+          text: "Your password is " + result.password
+        };
+        smtp.sendMail(mailOptions, function(error, success) {
+          if(error) console.log(error);
+          else console.log(success);
+          res.send("Check your email!");
+        });
+      }
+    });
+  }
 };
 
 // exports.login = server.post("/login", function(req,res){

@@ -170,3 +170,8 @@ input:focus {
   display: block;
   width: 100%;
 }*/
+.forgot {
+  margin-top: 5px;
+  text-align: right;
+  font-size: 20px;
+}
