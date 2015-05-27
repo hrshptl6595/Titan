@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var uriUtil = require("mongodb-uri");
 var mapper = require("./src/app/mapper");
 var server = express();
-var port = 8080;
+var port = 8080 || process.env.PORT;
 
 var mongoLabUri = "mongodb://heroku_app37234002:sur5lnj2in6matlr1s9jp7gkpj@ds031892.mongolab.com:31892/heroku_app37234002";
 var mongooseUri = uriUtil.formatMongoose(mongoLabUri);
