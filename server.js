@@ -26,7 +26,7 @@ server
   .use("/signup", mapper.signup.typeCheck)
   .use("/login", mapper.login.typeCheck)
   .use("/appointments", mapper.appointments.typeCheck)
-  .use("/", express.static('./src/markup'))
+  // .use("/", express.static('./src/markup'))
   .listen(port, function(){
     console.log("Request Passed!");
   });
