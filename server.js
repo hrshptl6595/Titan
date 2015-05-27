@@ -6,11 +6,13 @@ var mapper = require("./src/app/mapper");
 var server = express();
 var port = 8080 || process.env.PORT;
 
+var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+                replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
 var mongoLabUri = "mongodb://heroku_app37234002:sur5lnj2in6matlr1s9jp7gkpj@ds031892.mongolab.com:31892/heroku_app37234002";
 var mongooseUri = uriUtil.formatMongoose(mongoLabUri);
 // var mongooseUri = "mongodb://localhost/users";
 
-mongoose.connect(mongooseUri);
+mongoose.connect(mongooseUri,options);
 var db = mongoose.connection;
 db.once("open", function() {
   console.log("connection successful");
