@@ -1,16 +1,16 @@
-var user = require("./userModel");
 var mapper = require("./mapper");
+var employee = require("./modelE");
 
 exports.typeCheck = function (req,res,next) {
   if(req.method != "POST")
     res.status(404).send("Invalid HTTP Method!")
   else
-    mapper.signup.signup(req,res,next);
+    mapper.signupE.signupE(req,res,next);
 };
 
-exports.signup = function(req,res,next) {
+exports.signupE = function(req,res,next) {
   console.log(req);
-  if(!(req.body.userName && req.body.email && req.body.password))
+  if(!(req.body.userNameE && req.body.emailE && req.body.passwordE))
     res.status(403).send("Incomplete data!");
   // else if
   //   user.findOne({"userName": req.body.userName}, function(err, result) {
@@ -18,12 +18,12 @@ exports.signup = function(req,res,next) {
   //     else if(result) res.send("you have already signed up!");
   //   });
   else{
-    var newUser = new user ({
-      userName: req.body.userName,
-      email: req.body.email,
-      password: req.body.password
+    var newEmployee = new employee ({
+      userNameE: req.body.userNameE,
+      emailE: req.body.emailE,
+      passwordE: req.body.passwordE
     });
-    newUser.save(function(err,result) {
+    newEmployee.save(function(err,result) {
       if(err)
         res.status(500).send("Unable to signup!");
       else{

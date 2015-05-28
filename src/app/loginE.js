@@ -1,4 +1,4 @@
-var user = require("./userModel");
+var employee = require("./modelE");
 var jwt = require("jsonwebtoken");
 var mapper = require("./mapper");
 var url = require("url");
@@ -6,29 +6,28 @@ var mailer = require("nodemailer");
 
 exports.typeCheck = function (req,res,next) {
   if(req.method == "POST")
-    mapper.login.login(req,res,next);
+    mapper.loginE.loginE(req,res,next);
   else if(req.method == "GET")
-    mapper.login.forgotPassword(req,res,next);
+    mapper.loginE.forgotPassword(req,res,next);
   else
     res.status(404).send("Invalid HTTP Method!");
 };
 
-exports.login = function(req,res,next) {
+exports.loginE = function(req,res,next) {
   console.log(req);
-  user.findOne({"userName": req.body.userName}, function(err, result){
+  employee.findOne({"userNameE": req.body.userNameE}, function(err, result){
     if(err) res.send("oops! error!");
     else if(!result) res.send("user does not exist!!");
     else{
-      if(result.password!=req.body.password) res.send("incorrect password!");
+      if(result.passwordE!=req.body.passwordE) res.send("incorrect password!");
       else{
         var token = jwt.sign(result, "moony wormtail padfoot prongs", {expiresInMinutes: 1440});
         res.writeHead(200, {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
         });
-        res.write(token);
+        res.write("logged in!");
         res.end();
-        console.log("signed in!");
         console.log(res);
         next();
       }
