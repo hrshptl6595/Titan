@@ -1,7 +1,6 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-var uriUtil = require("mongodb-uri");
 var mapper = require("./app/mapper");
 var app = express();
 var port = process.env.PORT || 8080;
