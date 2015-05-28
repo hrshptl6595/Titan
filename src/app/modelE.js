@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var uriUtil = require("mongodb-uri");
 
 var mongoLabUriE = "mongodb://shruti1995:shruti126@ds031892.mongolab.com:31892/heroku_app37234002/employees";
-var mongooseUriE = uriUtil.formatMongoose(mongoLabUri);
+var mongooseUriE = uriUtil.formatMongoose(mongoLabUriE);
 // var mongooseUriE = "mongodb://localhost/employees";
 var connE = mongoose.createConnection(mongooseUriE);
 connE.once("open", function() {
