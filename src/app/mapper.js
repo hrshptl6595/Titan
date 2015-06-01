@@ -1,4 +1,5 @@
 exports.appointments = require("./appointments");
-exports.loginE = require("./loginE");
-exports.signupE = require("./signupE");
-exports.signupV = require("./signupV");
+exports.loginEmployee = require("./loginEmployee");
+exports.signupEmployee = require("./signupEmployee");
+exports.signupVisitor = require("./signupVisitor");
+exports.loginVisitor = require("./loginVisitor");

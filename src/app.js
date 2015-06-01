@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+var fs = require("fs");
 var mapper = require("./app/mapper");
 var app = express();
 var port = process.env.PORT || 8080;
@@ -12,14 +13,12 @@ app
     console.log(req.method, req.url);
     next();
   })
-  .use("/signupV",mapper.signupV.typecheck)
-  .use("/signupE", mapper.signupE.typeCheck)
-  .use("/loginE", mapper.loginE.typeCheck)
+  .use(express.static(__dirname + "/views"))
+  .use("/signupVisitor",mapper.signupVisitor.typeCheck)
+  .use("/loginVisitor", mapper.loginVisitor.typeCheck)
+  .use("/signupEmployee", mapper.signupEmployee.typeCheck)
+  .use("/loginEmployee", mapper.loginEmployee.typeCheck)
   .use("/appointments", mapper.appointments.typeCheck)
-  // .use("/", express.static('./src/markup'))
-  .use("/", function(req,res,next) {
-    res.send("Hello World!");
-  })
   .listen(port, function(){
-    console.log("Request Passed!");
+    console.log("Request Passed!" + __dirname);
   });

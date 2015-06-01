@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <title>Titan</title>
+    <script src="jquery-1.11.3.js"></script>
+    <script>
+      $(document).ready(function() {
+        var whichTab;
+        $(".tab").on("click", function(e) {
+          whichTab = $(this).index();
+          console.log(whichTab);
+          $(this).addClass('active');
+          $(this).siblings().removeClass('active');
+          console.log($(this).children().attr('href'));
+        })
+        $(".button").on("click", function(e) {
+          if(whichTab == 0)
+            $.ajax({
+              method: "POST",
+              data: {
+                userNameEmployee: $(".tab-content > div").eq(whichTab).find("#userName").val(),
+                emailEmployee: $(".tab-content > div").eq(whichTab).find("#email").val(),
+                passwordEmployee: $(".tab-content > div").eq(whichTab).find("#password").val()
+              },
+              url: "http://localhost:8080/signupEmployee"
+            })
+            .always(function(data) {
+              console.log(data);
+              $.get("signupEmployee.html", function(html) {
+                $(".tab-content > div").eq(whichTab).find("h1").append(" - thank you for signing up!");
+              });
+              alert(data.result  + "\nThank you for logging in!");
+            });
+          else
+            $.ajax({
+              method: "POST",
+              data: {
+                userNameEmployee: $(".tab-content > div").eq(whichTab).find("#userName").val(),
+                passwordEmployee: $(".tab-content > div").eq(whichTab).find("#password").val()
+              },
+              url: "http://localhost:8080/loginEmployee"
+            })
+            .always(function(data) {
+              $.get("signupEmployee.html", function(html) {
+                $(".tab-content > div").eq(whichTab).find("h1").append(" - thank you for logging in!");
+              });
+              alert(data.accessToken  + "\nThank you for logging in!");
+              localStorage.setItem("accessTokenEmployee",data.accessToken);
+            });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="form">
+      <ul class="tab-group">
+            <li class="tab active"><a href="#signup">Sign Up</a></li>
+            <li class="tab"><a href="#login">Log In</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="signup">
+          <h1>Sign Up</h1>
+          <form action="/" method="post" id="form">
+
+            <div class="field-wrap">
+              <label>
+                User Name<span class="req">*</span>
+              </label>
+              <input type="text" id="userName"/>
+            </div>
+
+            <div class="field-wrap">
+              <label>
+                Email Address<span class="req">*</span>
+              </label>
+              <input type="email" id="email"/>
+            </div>
+
+            <div class="field-wrap">
+              <label>
+                Password<span class="req">*</span>
+              </label>
+              <input type="password" id="password"/>
+            </div>
+
+            <button class="button"/>Submit</button>
+          </form>
+        </div>
+
+        <div id="login">
+          <h1>Login</h1>
+          <form action="/" method="post" id="form">
+
+            <div class="field-wrap">
+              <label>
+                User Name<span class="req">*</span>
+              </label>
+              <input type="text" id="userName"/>
+            </div>
+
+            <div class="field-wrap">
+              <label>
+                Password<span class="req">*</span>
+              </label>
+              <input type="password" id="password"/>
+            </div>
+
+            <p class="forgot"><a href="#">Forgot Password?</a></p>
+
+            <button class="button"/>Log In</button>
+          </form>
+        </div>
+      </div><!-- tab-content -->
+    </div>
+  </body>
+</html> <!-- /form -->
