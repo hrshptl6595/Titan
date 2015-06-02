@@ -1,6 +1,6 @@
-var empLanding = angular.module("empLanding", []);
+var empController = angular.module("empController",["ngRoute"]);
 
-empLanding.controller("empSignupC", ["$http", function($http){
+empController.controller("empSignupC", ["$http", function($http){
   this.fields = [
     {
       label: "User Name",
@@ -21,13 +21,13 @@ empLanding.controller("empSignupC", ["$http", function($http){
         userNameEmployee: this.fields[0].id,
         emailEmployee: this.fields[1].id,
         passwordEmployee: this.fields[2].id})
-      .success(function () {
-        alert("yay!");
+      .success(function (data) {
+        alert(data);
     });
   };
 }]);
 
-empLanding.controller("empLoginC", ["$http", function($http){
+empController.controller("empLoginC", ["$http","$route","$location", function($http,$route,$location){
   this.fields = [
     {
       label: "User Name",
@@ -42,9 +42,22 @@ empLanding.controller("empLoginC", ["$http", function($http){
     $http
       .post("http://localhost:8080/loginEmployee", {
         userNameEmployee: this.fields[0].id,
-        passwordEmployee: this.fields[2].id})
-      .success(function () {
-        alert("yay!");
+        passwordEmployee: this.fields[1].id})
+      .success(function (data) {
+        console.log(data);
+        alert(data.accessToken + "\nLogged in!");
+        localStorage.setItem("accessTokenEmployee",data.accessToken);
+        var req = {
+          method: "GET",
+          headers: {"Authorization" : "Bearer " + localStorage.getItem("accessTokenEmployee")},
+          url: "http://localhost:8080/appointments"
+        };
+        $http(req)
+          .success(function (data) {
+            console.log(data);
+            // $http.get("http://localhost:8080/schedule").success(function(){console.log("at appointments truly!");});
+            $location.path("/schedule");
+        });
     });
   };
   this.forgotPassword = function() {

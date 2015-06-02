@@ -4,7 +4,7 @@ var jwt = require("jsonwebtoken");
 
 exports.typeCheck = function (req,res,next) {
   if(req.method != "POST") {
-    res.writeHead(404); res.json({"message":"Invalid HTTP code!"});
+    res.writeHead(404); res.write("Invalid HTTP code!"); res.end();
   }
   else
     mapper.signupEmployee.signupEmployee(req,res,next);
@@ -17,9 +17,9 @@ exports.signupEmployee = function(req,res,next) {
   }
   employee.findOne({"userNameEmployee": req.body.userNameEmployee}, function(err, result) {
     if(err) {
-      res.writeHead(500); res.json({"message":"Invalid HTTP code!"});
+      res.writeHead(500); res.write("oops! Db error!"); res.end();
     }
-    else if (result) res.json({"message":"you have already signed up!"});
+    else if (result) {res.writeHead(200);res.write("you have already signed up!");res.end();}
     else if (!result) {
       var newEmployee = new employee ({
         userNameEmployee: req.body.userNameEmployee,
@@ -27,15 +27,10 @@ exports.signupEmployee = function(req,res,next) {
         passwordEmployee: req.body.passwordEmployee
       });
       newEmployee.save(function(err,result) {
-        if(err) res.json({"message":"error"});
+        if(err) {res.writeHead(500);res.write("Server error");res.end();}
         else{
           console.log(result);
-          // var token = jwt.sign(result, "moony wormtail padfoot prongs", {expiresInMinutes: 1440});
-          res.json({
-            "result": result,
-            // "accessToken": token,
-            // "expiresInMins": 1440
-          });
+          res.json(result);
         }
       });
     }

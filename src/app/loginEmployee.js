@@ -15,18 +15,17 @@ exports.typeCheck = function (req,res,next) {
 };
 
 exports.loginEmployee = function(req,res,next) {
-  console.log(req);
   employee.findOne({"userNameEmployee": req.body.userNameEmployee}, function(err, result){
-    if(err) res.json({"message":"error"});
-    else if(!result) res.json({"message":"user does not exist!!"});
+    if(err) {res.writeHead(500);res.write("Server error");res.end();}
+    else if(!result) {res.writeHead(403);res.write("user does not exist");res.end();}
     else{
-      if(result.passwordEmployee!=req.body.passwordEmployee) res.json({"message":"incorrect password!"});
+      if(result.passwordEmployee!=req.body.passwordEmployee) {res.writeHead(403);res.write("Incorrect Password");res.end();}
       else{
         var token = jwt.sign(result, "moony wormtail padfoot prongs");
+        console.log(token);
         res.json({
-          "accessToken": token,
+          "accessToken": token
         });
-        console.log(res);
       }
     }
   });
