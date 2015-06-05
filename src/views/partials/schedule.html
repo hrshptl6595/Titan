@@ -1,1 +1,17 @@
-  <p>At appointments</p>
+  <style>
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
+  body{
+    background: #139000;
+    font-family: "Courier 10 Pitch",serif;
+    font-size: 50px;
+    text-align: center;
+    color: #000000;
+  }
+  </style>
+
+
+  <p>Hello {{scheduleData.decoded.userNameEmployee}}</p>
+  <p>All Requests: {{scheduleData.allRequests}}</p>
+  <p>Pending requests: {{scheduleData.pendingRequests}}</p>

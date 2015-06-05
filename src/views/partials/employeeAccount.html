@@ -1,12 +1,11 @@
+<style>
 *, *:before, *:after {
   box-sizing: border-box;
 }
-
 body{
   background: #847c78;
   font-family: "Courier 10 Pitch",serif;
 }
-
 .form{
   background: #4f0485;
   border-radius: 5px;
@@ -15,49 +14,14 @@ body{
   margin: 40px auto;
   padding: 40px;
   position: relative;
-  top: 90px;
+  top: 150px;
 }
-
-.tab-group{
-  list-style: none;
-  margin: 0 0 40px 0;
-  width: inherit;
-  position: relative;
-  right: 20px;
-}
-
-.tab-group:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.tab-group li a {
-  display: block;
-  width: 50%;
-  background: #5d009f;
-  padding: 10px;
-  text-align: center;
-  float: left;
-  color: #ffffff;
-  border-radius: 3px;
-}
-
-.tab-group .active a {
-  background: #847c78;
-}
-
-.tab-group li a:hover{
-  background: #6b6461;
-}
-
 h1{
   text-align: center;
   color: #ffffff;
   font-weight: lighter;
   font-stretch: ultra-expanded;
 }
-
 .fields{
   display: block;
   width: 400px;
@@ -65,16 +29,13 @@ h1{
   font-size: 20px;
   margin-bottom: 50px;
 }
-
 label{
   color: #ffffff;
   font-stretch: ultra-expanded;
 }
-
 label .req{
   color: #847c78;
 }
-
 input{
   float: right;
   background: #4f0485;
@@ -82,12 +43,11 @@ input{
   border-radius: 3px;
   width: 60%;
   height: inherit;
-  padding: 10px;
+  padding: 5px;
   font-family: "Courier 10 Pitch",serif;
   color: #ffffff;
   font-size: 20px;
 }
-
 .button{
   border-radius: 4px;
   background: #847c78;
@@ -100,15 +60,12 @@ input{
   color: #ffffff;
   font-family: inherit;
 }
-
 .button:hover{
   background: #6b6461;
 }
-
 a{
   color: #ffffff;
 }
-
 .forgot{
   float: right;
   font-family: inherit;
@@ -117,3 +74,35 @@ a{
   position: relative;
   bottom: 40px;
 }
+</style>
+
+<div class="form">
+<my-tabs>
+  <my-pane title="Sign Up">
+    <div ng-controller="signupController">
+      <h1 id="signupH1">Sign Up</h1>
+      <div class="fields" ng-repeat="field in fields">
+        <label>
+        {{field.label}}<span class="req">*</span>
+        </label>
+        <input type="{{field.type}}" ng-model="field.id"/>
+      </div>
+      <button class="button" ng-click="submit()">Submit</button>
+    </div>
+  </my-pane>
+
+  <my-pane title="Login">
+    <div ng-controller="loginController">
+      <h1 id="loginH1">Login</h1>
+      <div class="fields" ng-repeat="field in fields">
+        <label>
+          {{field.label}}<span class="req">*</span>
+        </label>
+        <input type="{{field.type}}" ng-model="field.id"/>
+      </div>
+      <p class="forgot"><a href="#" ng-click="forgotPassword()">Forgot Password?</a></p>
+      <button class="button" ng-click="submit()"/>Log In</button>
+    </div>
+  </my-pane>
+</my-tabs>
+</div>

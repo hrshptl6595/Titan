@@ -1,51 +1,62 @@
 var empController = angular.module("empController",["ngRoute"]);
 
-empController.controller("empSignupC", ["$http", function($http){
-  this.fields = [
+empController.controller("signupController", ["$http","$scope","$timeout", function($http,$scope,$timeout){
+  $scope.fields = [
     {
       label: "User Name",
-      id: ""
+      id: "",
+      type: "text"
     },
     {
       label: "Email",
-      id: ""
+      id: "",
+      type: "email"
     },
     {
       label: "Password",
-      id: ""
+      id: "",
+      type: "password"
     }
   ];
-  this.submit = function() {
+  $scope.submit = function() {
     $http
       .post("http://localhost:8080/signupEmployee", {
-        userNameEmployee: this.fields[0].id,
-        emailEmployee: this.fields[1].id,
-        passwordEmployee: this.fields[2].id})
+        userNameEmployee: $scope.fields[0].id,
+        emailEmployee: $scope.fields[1].id,
+        passwordEmployee: $scope.fields[2].id})
       .success(function (data) {
-        alert(data);
-    });
+        console.log(data);
+        document.getElementById("signupH1").innerHTML = "Thank you for signing up! Proceed to Login!";
+        $timeout(function () {
+          document.getElementById("signupH1").innerHTML = "Sign Up";
+          for(var i=0;i<3;i++){$scope.fields[i].id="";}
+        }, 10000);
+      });
   };
 }]);
 
-empController.controller("empLoginC", ["$http","$route","$location", function($http,$route,$location){
-  this.fields = [
+empController.controller("loginController", ["$http","$route","$location","$scope","$rootScope", function($http,$route,$location,$scope,$rootScope){
+  $scope.fields = [
     {
       label: "User Name",
-      id: ""
+      id: "",
+      type: "text"
     },
     {
       label: "Password",
-      id: ""
+      id: "",
+      type: "password"
     }
   ];
-  this.submit = function() {
+
+  $scope.submit = function() {
     $http
       .post("http://localhost:8080/loginEmployee", {
-        userNameEmployee: this.fields[0].id,
-        passwordEmployee: this.fields[1].id})
+        userNameEmployee: $scope.fields[0].id,
+        passwordEmployee: $scope.fields[1].id})
       .success(function (data) {
         console.log(data);
-        alert(data.accessToken + "\nLogged in!");
+        for(var i=0;i<2;i++){$scope.fields[i].id="";}
         localStorage.setItem("accessTokenEmployee",data.accessToken);
         var req = {
           method: "GET",
@@ -55,16 +66,23 @@ empController.controller("empLoginC", ["$http","$route","$location", function($h
         $http(req)
           .success(function (data) {
             console.log(data);
-            // $http.get("http://localhost:8080/schedule").success(function(){console.log("at appointments truly!");});
+            $rootScope.scheduleData = data;
             $location.path("/schedule");
         });
     });
   };
-  this.forgotPassword = function() {
-    $http
-      .get("http://localhost:8080/forgotPassword?userNameEmployee=" + this.fields[0].id)
-      .success(function() {
-        alert("yay!");
-    });
-  };
+  $scope.forgotPassword = function() {
+    if($scope.fields[0].id)
+      $http
+        .get("http://localhost:8080/loginEmployee?userNameEmployee=" + $scope.fields[0].id)
+        .success(function() {
+          document.getElementById("loginH1").innerHTML = "Your password has been emailed to you!";
+        });
+    else
+      document.getElementById("loginH1").innerHTML = "Please provide your user name!";
+  }
 }]);
+
+empController.controller("scheduleController",function($scope){
+  $scope.message="Hello World!";
+});

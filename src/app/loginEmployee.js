@@ -15,33 +15,37 @@ exports.typeCheck = function (req,res,next) {
 };
 
 exports.loginEmployee = function(req,res,next) {
-  employee.findOne({"userNameEmployee": req.body.userNameEmployee}, function(err, result){
-    if(err) {res.writeHead(500);res.write("Server error");res.end();}
-    else if(!result) {res.writeHead(403);res.write("user does not exist");res.end();}
-    else{
-      if(result.passwordEmployee!=req.body.passwordEmployee) {res.writeHead(403);res.write("Incorrect Password");res.end();}
+  if(!(req.body.userNameEmployee && req.body.passwordEmployee)) {
+    res.writeHead(400); res.write("Incomplete data"); res.end();
+  }
+  else{
+    employee.findOne({"userNameEmployee": req.body.userNameEmployee}, function(err, result){
+      if(err) {res.writeHead(500);res.write("Server error");res.end();}
+      else if(!result) {res.writeHead(403);res.write("user has not signed up");res.end();}
       else{
-        var token = jwt.sign(result, "moony wormtail padfoot prongs");
-        console.log(token);
-        res.json({
-          "accessToken": token
-        });
+        if(result.passwordEmployee!=req.body.passwordEmployee) {res.writeHead(403);res.write("Incorrect Password");res.end();}
+        else{
+          var token = jwt.sign(result, "moony wormtail padfoot prongs");
+          res.json({
+            "accessToken": token
+          });
+        }
       }
-    }
-  });
+    });
+  }
 };
 
 exports.forgotPassword = function(req,res,next) {
-  console.log(req);
-  var userName = url.parse(req.url,true).query.userNameEmployee;
-  console.log(userNameEmployee);
-  if(!userNameEmployee)
-    res.json({"message":"Please provide your user name!"});
+  var userNameEmployee = url.parse(req.url,true).query.userNameEmployee;
+  if(!userNameEmployee){
+    res.writeHead(400); res.write("Incomplete data"); res.end();
+  }
   else {
-    user.findOne({"userNameEmployee": userNameEmployee}, function(err, result) {
+    employee.findOne({"userNameEmployee": userNameEmployee}, function(err, result) {
       if(err) res.status(500).send("oops! error!");
-      else if(!result) res.status(404).send("Couldn't find you!");
+      else if(!result) {res.writeHead(400); res.write("you haven't signed up yet!"); res.end();}
       else{
+        console.log(result);
         var smtp = mailer.createTransport("SMTP", {
           service: "Gmail",
           auth: {
@@ -51,9 +55,9 @@ exports.forgotPassword = function(req,res,next) {
         });
         var mailOptions = {
           from: "cts.titancompany@gmail.com",
-          to: result.email,
+          to: result.emailEmployee,
           subject: "Password Recovery lol",
-          text: "Your password is " + result.password
+          text: "Your password is " + result.passwordEmployee
         };
         smtp.sendMail(mailOptions, function(error, success) {
           if(error) console.log(error);

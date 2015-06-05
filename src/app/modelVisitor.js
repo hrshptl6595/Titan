@@ -19,7 +19,8 @@ visitorSchema = mongoose.Schema({
   mobnumVisitor: Number,
   empName: String,
   Time: Number,
-  place: String
+  place: String,
+  approved: Boolean
 });
 
 module.exports = connV.model("visitor", visitorSchema, "visitors");

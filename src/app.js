@@ -23,6 +23,9 @@ app
   .use("/signupEmployee", mapper.signupEmployee.typeCheck)
   .use("/loginEmployee", mapper.loginEmployee.typeCheck)
   .use("/appointments", mapper.appointments.typeCheck)
+  .use(function(req,res,next){ 
+    res.writeHead(403); res.write("Invalid path!"); res.end();
+  })
   .use("/",function(req,res,next){
     res.render("index");
   })
