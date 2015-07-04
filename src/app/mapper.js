@@ -1,5 +1,4 @@
-exports.appointments = require("./appointments");
-exports.loginEmployee = require("./loginEmployee");
-exports.signupEmployee = require("./signupEmployee");
-exports.signupVisitor = require("./signupVisitor");
-exports.loginVisitor = require("./loginVisitor");
+exports.employeeLogin = require("./employeeLogin");
+exports.visitorAppointment = require("./visitorAppointment");
+exports.dashboard = require("./dashboard");
+exports.calendar = require("./calendar");

@@ -1,0 +1,57 @@
+<style>
+  .calendar{
+    margin: 40px auto;
+    max-width: 900px;
+  }
+  table{
+    display: block;
+    margin: 30px auto;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  th, td{
+    border: 1px solid #cecaca;
+    box-shadow: rgba(0,0,0, 0.3) 0px 0px 8px;
+    -moz-box-shadow: rgba(0,0,0, 0.3) 0px 0px 8px;
+    -webkit-box-shadow: rgba(0,0,0, 0.3) 0px 0px 8px;
+    word-wrap: break-word;
+    position: relative;
+  }
+  .head {
+    height: 30px;
+    font-size: 15px;
+    padding: 10px;
+  }
+  .body a, .body td{
+    overflow: hidden;
+    display: block;
+    height: 100px;
+    text-decoration: none;
+    padding: 5px;
+    color: #ffffff;
+  }
+  #date {
+    font-size: 20px;
+    text-align: right;
+    height: 35px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+  .dailyEvents{
+    font-size: 13px;
+    display: block;
+    background: #22475e;
+    height: 20px;
+    border-radius: 2px;
+    margin-top: 5px;
+  }
+</style>
+<div class="calendar">
+  <format-tabs settings="settings" events="events">
+    <calendar-month type="Month"></calendar-month>
+    <calendar-week type="Week"></calendar-week>
+    <calendar-day type="Day"></calendar-day>
+  </format-tabs>
+</div>

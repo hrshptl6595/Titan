@@ -1,0 +1,17 @@
+<div ng-show="selected">
+  <p>{{settings.monthName()}} {{settings.date}}, {{settings.year}}</p>
+  <table>
+    <tr class="head"><th></th><th>{{directiveProps.day}}</th></tr>
+    <tr class="body" ng-repeat='row in directiveProps.rows'>
+      <td>
+        <a href="">{{row<10?"0" + row:row}}00
+        </a>
+      </td>
+      <td>
+        <div class="dailyEvents" ng-repeat="event in directiveProps.dailyEvents[row] track by $index">
+          <a href="">{{event==null?"":event}}</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

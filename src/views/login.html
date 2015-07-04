@@ -1,0 +1,46 @@
+<style>
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
+  body{
+    background-image: linear-gradient(#3b5998,#8b9dc3,#3b5998);
+    font-family: "Lato", serif;
+    color: #ffffff;
+    text-align: center;
+    font-size: 30px;
+  }
+  .loginDiv{
+    border-radius: 5px;
+    border: solid 1px #ffffff;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px;
+    position: relative;
+    top: 100px;
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #d0cece), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #FFFFFF, #d0cece 1px, #FFFFFF 25px);
+    box-shadow: rgba(0,0,0, 0.3) 0px 0px 8px;
+    -moz-box-shadow: rgba(0,0,0, 0.3) 0px 0px 8px;
+    -webkit-box-shadow: rgba(0,0,0, 0.3) 0px 0px 8px;
+  }
+  a{
+    display: block;
+    color: #3b5998;
+    font-family: "Lato",serif;
+    font-size: 30px;
+    text-decoration: none;
+    height: inherit;
+  }
+</style>
+<html ng-app="loginApp">
+  <head>
+    <title>Titan</title>
+    <script src="angular.js"></script>
+    <script src="loginApp.js"></script>
+  </head>
+  <body ng-controller="loginController">
+    <div class="loginDiv">
+      <a href="{{googleAuth}}">Log in with Google</a>
+    </div>
+  </body>
+</html>
