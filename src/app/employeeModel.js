@@ -14,6 +14,9 @@ var employeeSchema = new Schema({
   empRefreshToken: String,
   empName: String,
   empEmail: String,
+  empDept: String,
+  empDesignation: String,
+  empNumber: Number,
   empPicture: String,
   empUnique: String,
   nextSyncToken: String

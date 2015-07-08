@@ -18,10 +18,7 @@ app
   .use("/visitorAppointment", mapper.visitorAppointment.typeCheck)
   .use("/employeeLogin", mapper.employeeLogin.typeCheck)
   .use("/dashboard", mapper.dashboard.typeCheck)
-  .use("/barney", function(req, res, next){
-    res.write("Wait for it...");
-    res.end();
-  })
+  .use("/employees", mapper.employees.typeCheck)
   .use(function(req,res,next){
     res.writeHead(403); res.write("Invalid path!"); res.end();
   })

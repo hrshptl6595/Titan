@@ -45,6 +45,8 @@ var recurrence = function(params) {
         else {
           e[i].startsOn = new Date(e[i].start.date);
           e[i].endsOn = new Date(e[i].end.date);
+          e[i].startsOn.setHours(0,0);
+          e[i].endsOn.setHours(0,0);
           e[i].isDate = true;
         }
       }
@@ -91,11 +93,12 @@ var recurrence = function(params) {
           for(j=0;j<dated.length;j++)
           for(k=0;k<dated[j].length;k++)
           if(
-            (!e[i].isDate && e[i].startsOn.getDate()===dated[j][k]) ||
+            (!e[i].isDate && e[i].startsOn.getDate()===dated[j][k] && e[i].startsOn.getMonth()===params.settings.month) ||
             (e[i].isDate &&
               e[i].startsOn.getDate()+c<e[i].endsOn.getDate() &&
               e[i].startsOn.getDate()+c===dated[j][k] &&
               e[i].startsOn.getMonth()===e[i].endsOn.getMonth() &&
+              e[i].startsOn.getMonth()===params.settings.month &&
               e[i].startsOn.getFullYear()===e[i].endsOn.getFullYear()) ||
             (e[i].isDate &&
               e[i].startsOn.getMonth()-e[i].endsOn.getMonth()===-1 &&
@@ -344,7 +347,10 @@ var recurrence = function(params) {
       for(j=0;j<7;j++)
       for(k=0;k<mInstance.length;k++)
       if(dated[i][j]===mInstance[k].startsOn.getDate())
-      mEvents[i][j].push(mInstance[k].summary);
+      mEvents[i][j].push({
+        summary: mInstance[k].summary,
+        time: mInstance[k].startsOn.getHours()
+      });
     },
     getWeeklyEvents: function(wEvents) {
       var i,j,k,x,matrix=[];
@@ -353,8 +359,6 @@ var recurrence = function(params) {
         for(j=0;j<7;j++)
           wEvents[i][j] = [];
       }
-      console.log(mInstance);
-      console.log(params.settings.weekDates);
       for(i=0;i<7;i++)
       for(j=0;j<mInstance.length;j++) {
         if(params.settings.weekDates[i].getDate()===mInstance[j].startsOn.getDate() && params.settings.weekDates[i].getMonth()===mInstance[j].startsOn.getMonth())
@@ -365,8 +369,6 @@ var recurrence = function(params) {
       var i,j,k,x;
       for(i=0;i<24;i++)
         dEvents[i] = [];
-      console.log(mInstance);
-      console.log(params.settings.date);
       for(j=0;j<mInstance.length;j++) {
         if(params.settings.date===mInstance[j].startsOn.getDate() && params.settings.month===mInstance[j].startsOn.getMonth())
           dEvents[mInstance[j].startsOn.getHours()].push(mInstance[j].summary);

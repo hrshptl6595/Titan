@@ -7,8 +7,8 @@ var employee = require("./employeeModel");
 
 exports.fileRead = function(res, credentials, callback, req) {
   request.get("https://accounts.google.com/.well-known/openid-configuration", {
-    // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-    proxy: null
+    proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+    // proxy: null
   }, function(err, response, body){
     if(err) {
       console.log(err);
@@ -48,8 +48,8 @@ exports.getAuthUrl = function(res, credentials) {
 exports.getAccessToken = function(res, credentials, req) {
   if(credentials.client_id === (jwt.verify(req.query.state, "moony wormtail padfoot prongs")).client_id) {
     request.post(credentials.token_endpoint, {
-      // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
-      proxy: null,
+      proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
+      // proxy: null,
       form: {
         code: req.query.code,
         client_id: credentials.client_id,
@@ -59,36 +59,57 @@ exports.getAccessToken = function(res, credentials, req) {
       }
     }, function(err, response, accessJSON){
       if(err) console.log(err);
-      else
-        request.get("https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + JSON.parse(accessJSON).access_token, {
-          // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-          proxy: null
+      else {
+        accessJSON = JSON.parse(accessJSON);
+        request.get("https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + accessJSON.access_token, {
+          proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+          // proxy: null
         }, function(e,r, userInfo) {
           if(e) console.log(e);
-          else
-            employee.findOne({"empUnique": JSON.parse(userInfo).sub}, function(error, result){
+          else {
+            userInfo = JSON.parse(userInfo);
+            employee.findOne({"empUnique": userInfo.sub}, function(error, result){
               if(error) console.log(error);
               else if(!result) {
-                var newEmployee = new employee({
-                  empIDToken: JSON.parse(accessJSON).id_token,
-                  empAccessToken: JSON.parse(accessJSON).access_token,
-                  empRefreshToken: JSON.parse(accessJSON).refresh_token,
-                  empName: JSON.parse(userInfo).name,
-                  empEmail: JSON.parse(userInfo).email,
-                  empPicture: JSON.parse(userInfo).picture,
-                  empUnique: JSON.parse(userInfo).sub
+                var obj = {};
+                fs.readFile("./employeeData.json", function(err, json){
+                  if(err) console.log(err);
+                  json = JSON.parse(json);
+                  for(var i=0;i<json.employees.length;i++)
+                  if(userInfo.name.toUpperCase().search(json.employees[i].name.toUpperCase())!=-1) {
+                    obj.empDept = json.employees[i].department;
+                    obj.empName = json.employees[i].name;
+                    callback();
+                  }
                 });
-                newEmployee.save(function(E, newEmp){
-                  if(E) console.log(E);
-                });
+                function callback(){
+                  var newEmployee = new employee({
+                    empIDToken: (accessJSON).id_token,
+                    empAccessToken: (accessJSON).access_token,
+                    empRefreshToken: (accessJSON).refresh_token,
+                    empName: obj.empName,
+                    empEmail: (userInfo).email,
+                    empPicture: (userInfo).picture,
+                    empDept: obj.empDept,
+                    empUnique: (userInfo).sub
+                  });
+                  newEmployee.save(function(){
+                    mapper.dashboard.empLoad = newEmployee.empUnique;
+                    res.redirect(301, "http://localhost:8080/dashboard");
+                  });
+                }
               }
               else if(result) {
-                result.empAccess = JSON.parse(accessJSON);
-                result.empAccessToken = JSON.parse(accessJSON).access_token;
-                result.save();
+                result.empAccessToken = (accessJSON).access_token;
+                result.save(function(){
+                  mapper.dashboard.empLoad = result.empUnique;
+                  res.redirect(301, "http://localhost:8080/dashboard");
+                });
               }
             });
+          }
         });
+      }
     });
   }
 };
@@ -101,8 +122,9 @@ exports.typeCheck = function(req, res, next){
     mapper.employeeLogin.fileRead(res, credentials, mapper.employeeLogin.getAuthUrl);
   }
   else if(req.method === "GET" && req.query.code) {
-    res.writeHead(301, {Location: "http://localhost:8080/barney"});
-    res.end("draco dormiens nunquam titillandus", callback);
+    // res.writeHead(301, {Location: "http://localhost:8080/barney"});
+    // res.end("draco dormiens nunquam titillandus", callback);
+    callback();
     function callback(){
       var credentials;
       mapper.employeeLogin.fileRead(res, credentials, mapper.employeeLogin.getAccessToken, req);

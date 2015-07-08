@@ -4,9 +4,9 @@
     <tr class="head"><th ng-repeat="day in settings.daysOfWeek">{{day}}</th></tr>
     <tr class="body" ng-repeat='row in directiveProps.rows'>
       <td ng-repeat='col in directiveProps.cols'>
-        <a id="date" href="" ng-click="getEmptySlots(directiveProps.dated[row][col])">{{directiveProps.dated[row][col]}}</a>
+        <a id="date" href="" ng-click="settings.getEmptySlots(directiveProps.monthlyEvents[row][col], directiveProps.dated[row][col])">{{directiveProps.dated[row][col]}}</a>
         <div class="dailyEvents" ng-repeat="event in directiveProps.monthlyEvents[row][col] track by $index">
-          <a href="">{{event==null?"":event}}</a>
+          <a href="">{{event==null||settings.noEvents?"":event.summary}}</a>
         </div>
       </td>
     </tr>

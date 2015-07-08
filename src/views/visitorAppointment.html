@@ -5,7 +5,9 @@
     <script src="visitorApp.js"></script>
     <script src="controllers.js"></script>
     <script src="directives.js"></script>
+    <script src="services.js"></script>
     <script src="recurrence.js"></script>
+    <script src="fbLogin.js"></script>
     <style>
       *, *:before, *:after {
         box-sizing: border-box;
@@ -27,7 +29,7 @@
       .form input.ng-valid.ng-touched {
         border: solid 1px #00bd00;
       }
-      input{
+      input[type="text"], input[type="email"]{
         float: left;
         padding: 9px;
         border: solid 1px #d0cece;
@@ -115,24 +117,53 @@
       .body a:hover{
         background: #8b9dc3;
       }
-      #previous{
-        position: relative;
-        right: 200px;
+      .timings{
+        max-width: 800px;
+        margin: 20px auto;
       }
-      #next{
+      .slot{
+        display: block;
+        background: #3b5998;
+        bottom: 50px;
         position: relative;
-        left: 200px;
+        color: #ffffff;
+      }
+      .photoUpload{
+        display: block;
+        float: right;
+      }
+      .photoUpload > img{
+        width: 200px;
+        height: 200px;
+        float: right;
+      }
+      .photoUpload > button{
+        width: 200px;
+        background: #3b5998;
+        color: #ffffff;
+        font-size: 10px;
+        clear: both;
+      }
+      .employee{
+        display: block;
+        margin: 20px;
+      }
+      .employee > label{
+        font-size: 20px;
       }
     </style>
   </head>
   <body ng-controller="visitorController">
     <h1>Welcome to Titan Appointment Scheduler</h1>
     <hr>
+    <div class="photoUpload">
+      <img ng-src="{{profilePic}}">
+      <button ng-click="uploadPhoto()">Upload your photo from facebook</button>
+    </div>
     <form novalidate class="form" name="form">
       <div class="field">
-        <input placeholder="Name" type="text" ng-model="name" ng-model-options="{updateOn: 'blur'}" name="name" required visitor-check />
+        <input placeholder="Name" type="text" ng-model="name" ng-model-options="{updateOn: 'blur'}" name="name" required />
         <p ng-show="form.$submitted || form.name.$touched && form.name.$error.required">Please give us your name!</p>
-        <p ng-show="form.name.$touched && !form.name.$error.visitorCheck">Welcome back!</p>
       </div>
       <div class="field">
         <input placeholder="Company" type="text" ng-model="company" ng-model-options="{updateOn: 'blur'}" name="company" required/>
@@ -148,12 +179,28 @@
         <p ng-show="form.$submitted || form.email.$touched && form.email.$error.required">Please give us your email ID!</p>
         <p ng-show="form.$submitted || form.email.$touched && form.email.$error.email">This is not a valid email id!</p>
       </div>
-      <div class="calendar">
+      <div class="employee">
+        <input placeholder="Employee Name" type="text" ng-model="empName" name="empName" ng-model-options="{updateOn: 'blur'}" required employee-check events="events" init="init"/>
+        <a href="">>></a>
+        <img src="ajax-loader.gif" ng-show="form.empName.$pending.employeeCheck">
+        <label>
+          <input type="radio" ng-model="department" value="CTS" name="department" ng-click="getEmployeesList(department)"/>
+          CTS
+        </label>
+        <label>
+          <input type="radio" ng-model="department" value="Intern" name="department" ng-click="getEmployeesList(department)"/>
+          Intern
+        </label>
+        <p ng-show="form.$submitted || form.empName.$touched && form.empName.$error.required">You need to tell us whom you want to meet!</p>
+      </div>
+      <div class="calendar" ng-show="init.showCalendar">
         <format-tabs settings="settings" events="events">
           <calendar-month type="Month"></calendar-month>
         </format-tabs>
       </div>
-      <button ng-click="submit()">SUBMIT</button>
+      <div ng-show="timings" class="timings">
+        <button class="slot" ng-repeat="slot in slots" ng-click="submit(slot)">{{slot<10?'0':''}}{{slot}}00</button>
+      </div>
     </form>
   </body>
 </html>

@@ -13,10 +13,9 @@ visitorSchema = mongoose.Schema({
   visitorEmail: String,
   visitorCompany: String,
   visitorNumber: Number,
-  empName: String,
+  empUnique: String,
   date: Date,
   Time: Number,
-  place: String,
   approved: Boolean
 });
 

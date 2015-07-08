@@ -6,10 +6,20 @@ exports.typeCheck = function(req,res,next) {
     res.render("visitorAppointment");
   else if (req.method == "POST" && req.get("x-visitorCheck"))
     mapper.visitorAppointment.visitorCheck(req,res,next);
+  else if(req.method === "POST")
+    mapper.visitorAppointment.insertAppointment(req, res, next);
   else{
     res.writeHead(404); res.write("Invalid HTTP code"); res.end();
   }
 };
+
+exports.insertAppointment = function(req, res, next) {
+  visitor.findOne({"visitorEmail": req.body.visitorEmail}, function(e, result){
+    if(!result){
+
+    }
+  });
+}
 
 exports.visitorCheck = function(req,res,next) {
   if(!(req.body.visitorName)){

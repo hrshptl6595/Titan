@@ -9,12 +9,18 @@ angular.module("directives", [])
       },
       controller: function($scope) {
         $scope.formatTabs = [];
-        $scope.rObject = recurrence({
-          settings: $scope.settings,
-          events: $scope.events
-        });
+        $scope.rObject = {};
         this.dated = [];
-        var self = this;
+        var self=this;
+        $scope.settings.promise.then(function(data){
+          $scope.events = data;
+          $scope.rObject = recurrence({
+            settings: $scope.settings,
+            events: $scope.events
+          });
+          computeDated();
+          $scope.rObject.setup(self.dated);
+        });
         function computeDated(){
           var firstDay = (new Date($scope.settings.year, $scope.settings.month, 1)).getDay();
           var num=1, x, i, j;
@@ -30,8 +36,6 @@ angular.module("directives", [])
             }
           }
         };
-        computeDated();
-        $scope.rObject.setup(self.dated);
         $scope.select = function(formatTab) {
           angular.forEach($scope.formatTabs, function(each){
             each.selected = false;
@@ -148,11 +152,14 @@ angular.module("directives", [])
         type: "@"
       },
       link: function(scope, elem, attrs, formatTabsCtrl) {
-        formatTabsCtrl.addFormatTab(scope);
-        var rObject = formatTabsCtrl.getObjects().rObject;
         scope.settings = formatTabsCtrl.getObjects().settings;
-        scope.events = formatTabsCtrl.getObjects().events;
-        scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+        var rObject = {};
+        scope.settings.promise.then(function(){
+          formatTabsCtrl.addFormatTab(scope);
+          rObject = formatTabsCtrl.getObjects().rObject;
+          scope.events = formatTabsCtrl.getObjects().events;
+          scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+        });
         function callback() {
           console.log(scope);
           console.log("month calendar directive id : " + scope.$id);
@@ -162,7 +169,6 @@ angular.module("directives", [])
             scope.directiveProps.cols.push(i);
           }
           scope.directiveProps.dated = formatTabsCtrl.dated;
-          if(scope.events)
           rObject.getMonthlyEvents(scope.directiveProps.monthlyEvents, scope.directiveProps.dated);
         }
       }
@@ -176,11 +182,14 @@ angular.module("directives", [])
         type: "@"
       },
       link: function(scope, elem, attrs, formatTabsCtrl) {
-        formatTabsCtrl.addFormatTab(scope);
-        var rObject = formatTabsCtrl.getObjects().rObject;
         scope.settings = formatTabsCtrl.getObjects().settings;
-        scope.events = formatTabsCtrl.getObjects().events;
-        scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+        var rObject = {};
+        scope.settings.promise.then(function(){
+          formatTabsCtrl.addFormatTab(scope);
+          rObject = formatTabsCtrl.getObjects().rObject;
+          scope.events = formatTabsCtrl.getObjects().events;
+          scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+        });
         function callback() {
           console.log(scope);
           console.log("week calendar directive id : " + scope.$id);
@@ -237,11 +246,14 @@ angular.module("directives", [])
         type: "@"
       },
       link: function(scope, elem, attrs, formatTabsCtrl) {
-        formatTabsCtrl.addFormatTab(scope);
-        var rObject = formatTabsCtrl.getObjects().rObject;
         scope.settings = formatTabsCtrl.getObjects().settings;
-        scope.events = formatTabsCtrl.getObjects().events;
-        scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+        var rObject = {};
+        scope.settings.promise.then(function(){
+          formatTabsCtrl.addFormatTab(scope);
+          rObject = formatTabsCtrl.getObjects().rObject;
+          scope.events = formatTabsCtrl.getObjects().events;
+          scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+        });
         function callback() {
           console.log(scope);
           console.log("day calendar directive id : " + scope.$id);
@@ -270,6 +282,34 @@ angular.module("directives", [])
       }
     };
   })
+  .directive("employeeCheck", ["$http", "$q", "$timeout", function($http, $q, $timeout){
+    return {
+      require: "ngModel",
+      scope: {
+        events: "=",
+        init: "="
+      },
+      link: function(scope, elem, attrs, ctrl){
+        ctrl.$asyncValidators.employeeCheck = function(modelValue, viewValue){
+          console.log("running!");
+          var def = $q.defer();
+          $timeout(function(){
+            $http.get("http://localhost:8080/employees?name=" + viewValue)
+            .then(function(data){
+              console.log(data);
+              scope.events = data.data.empEvents;
+              scope.init.deferred.resolve(data.data.empEvents);
+              scope.init.showCalendar = true;
+              def.resolve();
+            }, function(){
+              def.reject();
+            })
+          }, 5000);
+          return def.promise;
+        }
+      }
+    };
+  }])
   .directive("visitorCheck", ["$http", function($http){
     return{
       require: "ngModel",
