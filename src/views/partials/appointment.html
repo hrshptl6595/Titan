@@ -1,0 +1,72 @@
+<div>
+  <h1>TITAN APPOINTMENT SCHEDULER</h1>
+  <hr>
+  <div class="photoUpload">
+    <img ng-src="{{profilePic}}"><br />
+    <button ng-click="uploadPhoto()">Upload your photo from facebook</button>
+  </div>
+  <span ng-show="form.name.$touched && form.name.$valid">Hello {{name}}</span>
+  <form novalidate class="form" name="form">
+    <div class="inputs">
+      <div class="field">
+        <input placeholder="Name" type="text" ng-model="name" ng-model-options="{updateOn: 'blur'}" name="name" required />
+        <p ng-show="(form.$submitted && form.name.$error.required) || (form.name.$touched && form.name.$error.required)">Required field</p>
+      </div>
+      <div class="field">
+        <input placeholder="Company" type="text" ng-model="company" ng-model-options="{updateOn: 'blur'}" name="company" required/>
+        <p ng-show="(form.$submitted && form.company.$error.required) || form.company.$touched && form.company.$error.required">Required field</p>
+      </div>
+      <div class="clear">&nbsp;</div>
+      <div class="field">
+        <input placeholder="Contact Number" type="text" ng-model="contactNumber" ng-model-options="{updateOn: 'blur'}" name="contactNumber" required num-check/>
+        <p ng-show="(form.$submitted && form.contactNumber.$error.required) || form.contactNumber.$touched && form.contactNumber.$error.required">Required field</p>
+        <p ng-show="(form.$submitted && form.contactNumber.$error.numCheck) || form.contactNumber.$touched && form.contactNumber.$error.numCheck">Invalid mobile number</p>
+      </div>
+      <div class="field">
+        <input placeholder="Email ID" type="email" ng-model="email" name="email" ng-model-options="{updateOn: 'blur'}" required />
+        <p ng-show="(form.$submitted && form.name.$error.required) || form.email.$touched && form.email.$error.required">Required field</p>
+        <p ng-show="(form.$submitted && form.name.$error.email) || form.email.$touched && form.email.$error.email">Invalid Email ID</p>
+      </div>
+      <div class="clear">&nbsp;</div>
+      <div class="field">
+        <input placeholder="Purpose of Visit" type="text" ng-model="purpose" name="purpose" ng-model-options="{updateOn: 'blur'}" required />
+        <p ng-show="(form.$submitted && form.name.$error.required) || form.purpose.$touched && form.purpose.$error.required">Required field</p>
+      </div>
+    </div>
+    <br />
+    <div class="employee">
+      <span>Please select the department of the employee you want to meet</span> <br />
+      <div class="departments">
+        <label>Department : </label>
+        <select ng-model="department" name="department" required employee-list list="list">
+          <option ng-repeat="dept in depts" value="{{dept}}">{{dept}}</option>
+        </select>
+        <img src="./ajax-loader.gif" ng-show="form.department.$pending.employeeList">
+        <img src="./tiny-green-checkmark.jpg" ng-show="form.department.$valid">
+      </div>
+      <div class="emp" ng-show="form.department.$valid">
+        <label>Employee Name</label>
+        <select ng-model="empName" name="empName" required employee-check events="events" init="init">
+          <option ng-repeat="obj in list" value="{{obj.empName}}">{{obj.empName}}</option>
+        </select>
+        <img src="./ajax-loader.gif" ng-show="form.empName.$pending.employeeCheck">
+        <img src="./tiny-green-checkmark.jpg" ng-show="form.empName.$valid">
+        <p ng-show="form.empName.$touched && form.empName.$error.required">Required field</p>
+      </div>
+    </div>
+    <div class="calendar" ng-show="init.showCalendar">
+      <format-tabs settings="settings" events="events" set-deferred="setDeferred(value)">
+        <calendar-month type="Month"></calendar-month>
+      </format-tabs>
+    </div>
+    <div class="timings" ng-show="init.showTimings">
+      <button ng-style="{'position': 'relative', 'top': '100px', 'right': '450px'}" ng-repeat="slot in [9,10,11,12,13,14,15,16,17,18]" ng-disabled="disableTimings" disablebuttons ng-click="submit(slot)">{{slot}}</button>
+    </div>
+  </form>
+  <div ng-show="submitted && form.$valid">
+    Thank you for booking an appointment! Please await a confirmation email at the given email id!
+  </div>
+  <div ng-show="!form.$valid && submitted">
+    You have not filled all required fields. Fill them up and try again.
+  </div>
+</div>

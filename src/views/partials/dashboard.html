@@ -1,0 +1,60 @@
+<style>
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
+  body{
+    background-image: linear-gradient(#3b5998,#8b9dc3,#3b5998);
+    font-family: "Lato Light", serif;
+    color: #ffffff;
+  }
+  .person{
+    margin: 30px;
+    display: block;
+    text-align: center;
+    font-size: 20px;
+    line-height: 75%;
+  }
+  .tabs{
+    list-style: none;
+    margin: 30px auto;
+    max-width: 1500px;
+    position: relative;
+    right: 20px;
+  }
+  .tabs:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .tabs li a {
+    display: block;
+    width: 25%;
+    height: 10%;
+    background: #f0f0f0;
+    background: -webkit-gradient(linear, left top, left 25, from(#f0f0f0), color-stop(4%, #d0cece), to(#f0f0f0));
+    background: -moz-linear-gradient(top, #f0f0f0, #d0cece 1px, #f0f0f0 25px);
+    padding: 20px;
+    text-align: center;
+    float: left;
+    color: #3b5998;
+    text-decoration: none;
+    font-size: 20px;
+    font-family: "Lato Light", serif;
+  }
+  .tabs li a:hover{
+    border: solid 1px #03396c;
+  }
+</style>
+
+<div ng-controller="dashboardController">
+  <div class="person">
+    <h1>{{name}}</h1>
+    <h4>{{email}}</h4>
+  </div>
+  <ul class="tabs">
+    <li ng-repeat="tab in tabs">
+      <a href="{{tab.href}}">{{tab.tab}}</a>
+    </li>
+  </ul>
+  <div ng-view></div>
+</div>

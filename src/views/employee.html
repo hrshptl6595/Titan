@@ -1,0 +1,24 @@
+<html ng-app="employeeApp">
+  <head>
+    <title>Titan</title>
+    <base href="/">
+    <script src="angular.js"></script>
+    <script src="angular-route.js"></script>
+    <script src="angular-cookies.js"></script>
+    <script src="employeeApp.js"></script>
+    <script src="controllers.js"></script>
+    <script src="directives.js"></script>
+    <script src="services.js"></script>
+    <script src="recurrence.js"></script>
+  </head>
+  <body ng-controller="employeeController">
+    <div ng-switch="view">
+      <div ng-switch-when="employeeLogin">
+        <div ng-include="'partials/login.html'"></div>
+      </div>
+      <div ng-switch-when="dashboard">
+        <div ng-include="'partials/dashboard.html'"></div>
+      </div>
+    </div>
+  </body>
+</html>

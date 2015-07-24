@@ -1,0 +1,13 @@
+<div>
+  Enter your email id
+  <input type="email" ng-model="email" ng-model-options="{updateOn: 'blur'}" required confirm alternatives="alternatives">
+</div>
+<div ng-show="alternatives.employee===undefined?false:true">
+  <div ng-repeat="emp in alternatives.employee">
+    {{emp.empName}} suggests :
+    Date : {{alternatives.visitor[$index].date | date:'dd-MM-yyyy'}}
+    Time : {{alternatives.visitor[$index].slot}}00
+    <button ng-click="okay(alternatives.visitor[$index])">Accept</button>
+    <button ng-click="reject(alternatives.visitor[$index])">Reject</button>
+  </div> <br />
+</div>
