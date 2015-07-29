@@ -1,4 +1,46 @@
 <style>
+  .formatTabs{
+    list-style: none;
+    float: right;
+    width: 350px;
+    position: relative;
+    bottom: 30px;
+  }
+  .toggleTabs{
+    list-style: none;
+    float: left;
+    width: 200px;
+    position: relative;
+    bottom: 30px;
+    right: 30px;
+  }
+  .formatTabs:after, .toggleTabs:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .formatTabs li a, .toggleTabs li a{
+    display: block;
+    width: 33%;
+    background: #f0f0f0;
+    background: -webkit-gradient(linear, left top, left 25, from(#f0f0f0), color-stop(4%, #d0cece), to(#f0f0f0));
+    background: -moz-linear-gradient(top, #f0f0f0, #d0cece 1px, #f0f0f0 25px);
+    text-align: center;
+    float: left;
+    color: #3b5998;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 20px;
+    font-family: "Lato Light", serif;
+  }
+  .formatTabs li a:hover, .toggleTabs li a:hover{
+    background: #dfd7d7;
+  }
+  p{
+    font-size: 25px;
+    text-align: center;
+    font-weight: bold;
+  }
   .calendar{
     margin: 40px auto;
     max-width: 900px;
@@ -40,15 +82,43 @@
     right: 0px;
   }
   .dailyEvents{
-    font-size: 13px;
     display: block;
+  }
+  .dailyEvents a{
+    font-size: 13px;
     background: #22475e;
+    border-radius: 2px;
+    margin-top: 5px;
+    width: 115px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    height: 20px;
+  }
+  .dailyEvents a:hover{
+    overflow: visible;
+    background: #22475e;
+    white-space: normal;
+    height: auto;
+  }
+  .visitorAppointment{
+    background: #ae0001;
     height: 20px;
     border-radius: 2px;
     margin-top: 5px;
+    font-size: 13px;
+    display: block;
+  }
+  .bodyWeek td, .bodyWeek a, .bodyDay td, .bodyDay a{
+    height: 60px;
+    overflow: hidden;
+    display: block;
+    text-decoration: none;
+    padding: 5px;
+    color: #ffffff;
   }
 </style>
-<div class="calendar">
+<div class="calendar" ng-controller="calendarController">
   <format-tabs settings="settings" events="events">
     <calendar-month type="Month"></calendar-month>
     <calendar-week type="Week"></calendar-week>

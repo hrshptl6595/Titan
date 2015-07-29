@@ -1,12 +1,13 @@
-angular.module("services", [])
-  .factory("empService", ["$http", function($http){
+angular.module("services", ["ngCookies"])
+  .factory("employee", ["$http", "$cookies", function($http, $cookies){
     var service = {};
-    var request = {
-      method: "GET",
-      headers: {
-        "x-employee": "exists"
-      },
-      url: "http://localhost:8080/dashboard"
-    };
-    return $http(request);
+    return service; 
+  }])
+  .factory("sharedPromise", ["$q", function($q){
+    var service = {};
+    service.deferred = $q.defer();
+    service.promise = service.deferred.promise;
+    service.date = null;
+    service.eArray = null;
+    return service;
   }]);

@@ -38,9 +38,17 @@ var recurrence = function(params) {
   function init(mEvents, dated) {
     if(e) {
       for(var i=0;i<e.length;i++) {
+        if(!e[i].extendedProperties) {
+          e[i].extendedProperties = {
+            "private": {
+              visitorAppointment: true
+            }
+          };
+        }
         if(e[i].start.dateTime) {
           e[i].startsOn = new Date(e[i].start.dateTime);
           e[i].endsOn = new Date(e[i].end.dateTime);
+          e[i].isDate = false;
         }
         else {
           e[i].startsOn = new Date(e[i].start.date);
@@ -108,7 +116,10 @@ var recurrence = function(params) {
             // mEvents[j][k].push(e[i].summary);
             mInstance.push({
               startsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].startsOn.getHours()),
-              summary: e[i].summary
+              endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+              summary: e[i].summary,
+              visitorDetails: e[i].extendedProperties.private,
+              isDate: e[i].isDate
             });
             if(e[i].isDate) c++;
           }
@@ -144,7 +155,10 @@ var recurrence = function(params) {
                   // mEvents[j][k].push(e[i].summary);
                   mInstance.push({
                     startsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].startsOn.getHours()),
-                    summary: e[i].summary
+                    endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                    summary: e[i].summary,
+                    visitorDetails: e[i].extendedProperties.private,
+                    isDate: e[i].isDate
                   });
                   if(e[i].isDate) c++;
                 }
@@ -181,7 +195,10 @@ var recurrence = function(params) {
                 // mEvents[x][whichDay()].push(e[i].summary);
                 mInstance.push({
                   startsOn: new Date(params.settings.year, params.settings.month, dated[x][whichDay()], e[i].startsOn.getHours()),
-                  summary: e[i].summary
+                  endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                  summary: e[i].summary,
+                  visitorDetails: e[i].extendedProperties.private,
+                  isDate: e[i].isDate
                 });
               }
             }
@@ -195,7 +212,10 @@ var recurrence = function(params) {
                     // mEvents[j][whichDay()].push(e[i].summary);
                     mInstance.push({
                       startsOn: new Date(params.settings.year, params.settings.month, dated[j][whichDay()], e[i].startsOn.getHours()),
-                      summary: e[i].summary
+                      endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                      summary: e[i].summary,
+                      visitorDetails: e[i].extendedProperties.private,
+                      isDate: e[i].isDate
                     });
                     prevIns.week[i] = new Date(params.settings.year, params.settings.month, dated[j][whichDay()]);
                   }
@@ -204,7 +224,10 @@ var recurrence = function(params) {
                       // mEvents[j][whichDay()].push(e[i].summary);
                       mInstance.push({
                         startsOn: new Date(params.settings.year, params.settings.month, dated[j][whichDay()], e[i].startsOn.getHours()),
-                        summary: e[i].summary
+                        endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                        summary: e[i].summary,
+                        visitorDetails: e[i].extendedProperties.private,
+                        isDate: e[i].isDate
                       });
                       prevIns.week[i] = new Date(params.settings.year, params.settings.month, dated[j][whichDay()])
                     }
@@ -223,7 +246,10 @@ var recurrence = function(params) {
                       // mEvents[j][whichDay()].push(e[i].summary);
                       mInstance.push({
                         startsOn: new Date(params.settings.year, params.settings.month, dated[j][whichDay()], e[i].startsOn.getHours()),
-                        summary: e[i].summary
+                        endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                        summary: e[i].summary,
+                        visitorDetails: e[i].extendedProperties.private,
+                        isDate: e[i].isDate
                       });
                       prevIns.week[i] = new Date(params.settings.year, params.settings.month, dated[j][whichDay()]);
                     }
@@ -249,7 +275,10 @@ var recurrence = function(params) {
                       // mEvents[j][arr[k]].push(e[i].summary);
                       mInstance.push({
                         startsOn: new Date(params.settings.year, params.settings.month, dated[j][arr[k]], e[i].startsOn.getHours()),
-                        summary: e[i].summary
+                        endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                        summary: e[i].summary,
+                        visitorDetails: e[i].extendedProperties.private,
+                        isDate: e[i].isDate
                       });
                       prevIns.weekArr[i][k] = new Date(params.settings.year, params.settings.month, dated[j][arr[k]]);
                     }
@@ -258,7 +287,10 @@ var recurrence = function(params) {
                         // mEvents[j][arr[k]].push(e[i].summary);
                         mInstance.push({
                           startsOn: new Date(params.settings.year, params.settings.month, dated[j][arr[k]], e[i].startsOn.getHours()),
-                          summary: e[i].summary
+                          endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                          summary: e[i].summary,
+                          visitorDetails: e[i].extendedProperties.private,
+                          isDate: e[i].isDate
                         });
                         prevIns.weekArr[i][k] = new Date(params.settings.year, params.settings.month, dated[j][arr[k]]);
                       }
@@ -277,7 +309,10 @@ var recurrence = function(params) {
                         // mEvents[j][arr[k]].push(e[i].summary);
                         mInstance.push({
                           startsOn: new Date(params.settings.year, params.settings.month, dated[j][arr[k]], e[i].startsOn.getHours()),
-                          summary: e[i].summary
+                          endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                          summary: e[i].summary,
+                          visitorDetails: e[i].extendedProperties.private,
+                          isDate: e[i].isDate
                         });
                         prevIns.weekArr[i][k] = new Date(params.settings.year, params.settings.month, dated[j][arr[k]]);
                       }
@@ -295,7 +330,10 @@ var recurrence = function(params) {
                   // mEvents[j][k].push(e[i].summary);
                   mInstance.push({
                     startsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].startsOn.getHours()),
-                    summary: e[i].summary
+                    endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                    summary: e[i].summary,
+                    visitorDetails: e[i].extendedProperties.private,
+                    isDate: e[i].isDate
                   });
                   prevIns.date[i] = new Date(params.settings.year, params.settings.month, dated[j][k]);
                 }
@@ -305,7 +343,10 @@ var recurrence = function(params) {
                     // mEvents[j][k].push(e[i].summary);
                     mInstance.push({
                       startsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].startsOn.getHours()),
-                      summary: e[i].summary
+                      endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                      summary: e[i].summary,
+                      visitorDetails: e[i].extendedProperties.private,
+                      isDate: e[i].isDate
                     });
                     prevIns.date[i] = new Date(params.settings.year, params.settings.month, dated[j][k]);
                   }
@@ -324,7 +365,10 @@ var recurrence = function(params) {
                     // mEvents[j][k].push(e[i].summary);
                     mInstance.push({
                       startsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].startsOn.getHours()),
-                      summary: e[i].summary
+                      endsOn: new Date(params.settings.year, params.settings.month, dated[j][k], e[i].endsOn.getHours()),
+                      summary: e[i].summary,
+                      visitorDetails: e[i].extendedProperties.private,
+                      isDate: e[i].isDate
                     });
                     prevIns.date[i] = new Date(params.settings.year, params.settings.month, dated[j][k]);
                   }
@@ -349,7 +393,9 @@ var recurrence = function(params) {
       if(dated[i][j]===mInstance[k].startsOn.getDate())
       mEvents[i][j].push({
         summary: mInstance[k].summary,
-        time: mInstance[k].startsOn.getHours()
+        time: mInstance[k].startsOn.getHours(),
+        visitorDetails: mInstance[k].visitorDetails,
+        isDate: mInstance[k].isDate
       });
     },
     getWeeklyEvents: function(wEvents) {
@@ -361,8 +407,16 @@ var recurrence = function(params) {
       }
       for(i=0;i<7;i++)
       for(j=0;j<mInstance.length;j++) {
-        if(params.settings.weekDates[i].getDate()===mInstance[j].startsOn.getDate() && params.settings.weekDates[i].getMonth()===mInstance[j].startsOn.getMonth())
-          wEvents[mInstance[j].startsOn.getHours()][i].push(mInstance[j].summary);
+        if(params.settings.weekDates[i].getDate()===mInstance[j].startsOn.getDate() && params.settings.weekDates[i].getMonth()===mInstance[j].startsOn.getMonth() && params.settings.weekDates[i].getFullYear()===mInstance[j].startsOn.getFullYear()) {
+          k = mInstance[j].startsOn.getHours();
+          while(k<mInstance[j].endsOn.getHours()){
+            wEvents[k][i].push({
+              summary: mInstance[j].summary,
+              visitorDetails: mInstance[j].visitorDetails
+            });
+            k++;
+          }
+        }
       }
     },
     getDailyEvents: function(dEvents) {
@@ -370,8 +424,16 @@ var recurrence = function(params) {
       for(i=0;i<24;i++)
         dEvents[i] = [];
       for(j=0;j<mInstance.length;j++) {
-        if(params.settings.date===mInstance[j].startsOn.getDate() && params.settings.month===mInstance[j].startsOn.getMonth())
-          dEvents[mInstance[j].startsOn.getHours()].push(mInstance[j].summary);
+        if(params.settings.date===mInstance[j].startsOn.getDate() && params.settings.month===mInstance[j].startsOn.getMonth() && params.settings.year===mInstance[j].startsOn.getFullYear()) {
+          k = mInstance[j].startsOn.getHours();
+          while(k<mInstance[j].endsOn.getHours()){
+            dEvents[k].push({
+              summary: mInstance[j].summary,
+              visitorDetails: mInstance[j].visitorDetails
+            });
+            k++;
+          }
+        }
       }
     }
   };

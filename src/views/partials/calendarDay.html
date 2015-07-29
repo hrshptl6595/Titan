@@ -2,14 +2,33 @@
   <p>{{settings.monthName()}} {{settings.date}}, {{settings.year}}</p>
   <table>
     <tr class="head"><th></th><th>{{directiveProps.day}}</th></tr>
-    <tr class="body" ng-repeat='row in directiveProps.rows'>
+    <tr class="bodyDay">
+      <td>
+        <a href="">
+        All Day
+        </a>
+      </td>
+      <td>
+        <div class="dailyEvents" ng-repeat="event in directiveProps.dailyEvents[0] track by $index">
+          <a href="" ng-class="{visitorAppointment: event.visitorAppointment}">{{event==null?'':event.summary}}</a>
+        </div>
+      </td>
+    </tr>
+    <tr class="bodyDay" ng-repeat='row in directiveProps.rows'>
       <td>
         <a href="">{{row<10?"0" + row:row}}00
         </a>
       </td>
       <td>
         <div class="dailyEvents" ng-repeat="event in directiveProps.dailyEvents[row] track by $index">
-          <a href="">{{event==null?"":event}}</a>
+          <a href="" ng-class="{visitorAppointment: event.visitorDetails.visitorAppointment==='true'?true:false}">
+            {{event==null||settings.noEvents?"":event.summary}}
+            <div ng-show="event.visitorDetails.visitorAppointment==='true'?true:false">
+              Name: {{event.visitorDetails.visitorName}}
+              Company: {{event.visitorDetails.visitorCompany}}
+              Number: {{event.visitorDetails.visitorNumber}}
+            </div>
+          </a>
         </div>
       </td>
     </tr>

@@ -1,9 +1,43 @@
-angular.module("controllers", ["services"])
-  .controller("dashboardController", ["$scope", "empService", function($scope, empService){
-    empService.then(function(data){
-      $scope.name = data.data.empDetails.empName.toUpperCase();
-      $scope.email = data.data.empDetails.empEmail;
-      $scope.events = data.data.empEvents;
+angular.module("controllers", ["ngCookies", "services"])
+  .controller("employeeController", ["$route", "$scope", function($route, $scope){
+    $scope.$on("$routeChangeSuccess", function(e){
+      console.log($route.current);
+      if($route.current.action && $route.current.action==="employeeLogin")
+        $scope.view = "employeeLogin";
+      else if($route.current.action && ($route.current.action==="dashboard" || $route.current.action==="dashboard.calendar"|| $route.current.action==="dashboard.createAppointment"|| $route.current.action==="dashboard.visitors"))
+        $scope.view = "dashboard";
+    });
+  }])
+  .controller("loginController", ["$scope", "$http", function($scope, $http){
+    var request = {
+      method: "GET",
+      url: "http://localhost:8080/employeeLogin",
+      headers: {
+        "x-googleauth": "exists"
+      }
+    };
+    $http(request).success(function(data){
+      $scope.googleAuth = data.encodedURI;
+    });
+  }])
+  .controller("dashboardController", ["$scope", "employee", "$http", "$cookies", "$location", function($scope, employee, $http, $cookies, $location){
+    $http({
+      url: "http://localhost:8080/dashboard",
+      method: "GET",
+      headers: {
+        "x-employee": "exists"
+      }
+    }).then(function(data){
+      console.log(data);
+      if(typeof(data.data)==="object"){
+        $scope.name = data.data.empDetails.empName.toUpperCase();
+        $scope.email = data.data.empDetails.empEmail;
+        $scope.pendingReqs = data.data.pendingReqsArray;
+        $scope.visitorsToday = data.data.visitorsTodayArray;
+        employee.empDetails = data.data.empDetails;
+      }
+      else if(typeof(data.data)==="string")
+      $location.url("/employeeLogin");
     });
     $scope.tabs = [
       {
@@ -24,10 +58,24 @@ angular.module("controllers", ["services"])
       }
     ];
   }])
-  .controller("calendarController", ["$scope", "$q", function($scope, $q){
+  .controller("calendarController", ["$scope", "$q", "sharedPromise", "$location", "$http", "employee", "$cookies", function($scope, $q, sharedPromise, $location, $http, employee, $cookies){
     var deferred = $q.defer();
-    if($scope.events)
-      deferred.resolve($scope.events);
+    $http({
+      url: "http://localhost:8080/dashboard",
+      method: "GET",
+      headers: {
+        "x-calendar": "exists"
+      }
+    }).then(function(data){
+      console.log(data);
+      if(typeof(data.data)==="object"){
+        $scope.events = data.data.empEvents;
+        employee.empEvents = $scope.events;
+        deferred.resolve($scope.events);
+      }
+      else if(typeof(data.data)==="string")
+      $location.url("/employeeLogin");
+    });
     $scope.settings = {
       months: ["Jan","Feb","March","April","May","June","July","August","Sep","Oct","Nov","Dec"],
       daysOfWeek: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
@@ -64,25 +112,59 @@ angular.module("controllers", ["services"])
         }
       },
       noEvents: false,
-      promise: deferred.promise
+      promise: deferred.promise,
+      sharedPromiseResolved: false,
+      getEmptySlots: function(eArray, date) {
+        if($scope.settings.sharedPromiseResolved){
+          sharedPromise.date = new Date($scope.settings.year, $scope.settings.month, date);
+          sharedPromise.eArray = eArray;
+          console.log(sharedPromise.date);
+          console.log(sharedPromise.eArray);
+          $location.url("/dashboard");
+        }
+      }
     };
   }])
   .controller("visitorController", ["$scope", "$q", "$http", function($scope, $q, $http){
+    $scope.profilePic = "profile.jpg";
     $scope.init = {
       deferred: $q.defer(),
       showCalendar: false,
+      empUnique: null,
+      showTimings: false
     };
-    // $scope.showCalendar = false;
-    // empService.then(function(data){
-    //   console.log(data);
-    //   $scope.events = data.data.empEvents;
-    //   if($scope.events)
-    //     deferred.resolve($scope.events);
-    // }, function(data){
-    //   console.log(data);
-    // });
+    $scope.depts = [
+      "MD OFFICE",
+      "FINANCE",
+      "CORPORATE GENERAL",
+      "MARKETING",
+      "HUMAN RESOURCES",
+      "DESIGN",
+      "SYSTEMS",
+      "RETAILING",
+      "COO'S OFFICE-WATCH DIVISION",
+      "CENTRAL TECHNOLOGY SERVICES",
+      "SALES",
+      "PURCHASE",
+      "SUPPLY CHAIN MANAGEMENT",
+      "CUSTOMER SERVICE",
+      "INTERNATIONAL OPERATIONS - TPD",
+      "TRADE WATCHES",
+      "MERCHANDISING",
+      "GENERAL",
+      "CORPORATE SALES",
+      "FRAGNANCES",
+      "ADMINISTRATION",
+      "INTERNAL AUDIT",
+      "JEWELLERY",
+      "E-COMMERCE",
+      "COMMERCIAL",
+      "AFTER SALES SERVICE",
+      "ECB",
+      "INTEGRATED RETAIL SERVICES"
+    ]
+    $scope.list = [];
     $scope.events = [];
-    $scope.profilePic = "profile.png";
     $scope.settings = {
       months: ["Jan","Feb","March","April","May","June","July","August","Sep","Oct","Nov","Dec"],
       daysOfWeek: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
@@ -120,20 +202,19 @@ angular.module("controllers", ["services"])
       },
       noEvents: true,
       getEmptySlots: function(eArray, date){
-        $scope.timings=true;
-        $scope.slots = [];
-        $scope.date = date;
-        var flag=0;
-        for(var i=9;i<=18;i++){
-          flag=0;
-          for(var j=0;j<eArray.length;j++)
-          if(i===eArray[j].time)
-          flag=1;
-          if(flag===0)
-          $scope.slots.push(i);
-        }
+        $scope.init.showTimings = true;
+        $scope.eArray = eArray;
+        $scope.thatDate = date;
+        console.log(eArray, date);
+        console.log($scope.settings);
+        console.log(new Date($scope.settings.year, $scope.settings.month, $scope.thatDate));
+        console.log(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
       },
       promise: $scope.init.deferred.promise
+    };
+    $scope.setDeferred = function(value){
+      $scope.init.deferred = value;
+      $scope.settings.promise = $scope.init.deferred.promise;
     };
     $scope.uploadPhoto = function(){
       FB.login(function(response) {
@@ -150,8 +231,54 @@ angular.module("controllers", ["services"])
         else if(response.status === "unknown")
           console.log("unknown!");
       }, {scope: 'public_profile,email'});
-    }
-    $scope.getEmployeesList = function(department){
-      $http.get("http://localhost:8080/employees?department=" + department);
+    };
+    $scope.submit = function(slot){
+      console.log($scope.form);
+      $scope.submitted = true;
+      if($scope.form.$valid)
+        $http({
+          url: "http://localhost:8080/visitorAppointment",
+          method: "POST",
+          data: {
+            visitorPicture: $scope.profilePic,
+            visitorName: $scope.name,
+            visitorEmail: $scope.email,
+            visitorNumber: $scope.contactNumber,
+            visitorCompany: $scope.company,
+            visitorPurpose: $scope.purpose,
+            empUnique: $scope.init.empUnique,
+            date: new Date($scope.settings.year, $scope.settings.month, $scope.thatDate),
+            slot: slot
+          }
+        });
+    };
+  }])
+  .controller("confirmController", ["$scope", "$http", function($scope, $http){
+    $scope.alternatives = {};
+    $scope.okay = function(visitor){
+      visitor.approved = true;
+      visitor.suggestedAlternative = false;
+      $http({
+        url: "http://localhost:8080/dashboard",
+        method: "POST",
+        data : {
+          visitor: visitor
+        }
+      }).success(function(data){
+        console.log(data);
+      });
+    };
+    $scope.reject = function(visitor){
+      visitor.approved = false;
+      visitor.suggestedAlternative = false;
+      $http({
+        url: "http://localhost:8080/dashboard",
+        method: "POST",
+        data : {
+          visitor: visitor
+        }
+      }).success(function(data){
+        console.log(data);
+      });
     }
   }]);

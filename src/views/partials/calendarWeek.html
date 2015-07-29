@@ -2,7 +2,19 @@
   <p>{{directiveProps.monthStart}} {{settings.weekDates[0].getDate()}} - {{directiveProps.monthEnd}} {{settings.weekDates[6].getDate()}}, {{settings.year}}</p>
   <table>
     <tr class="head"><th></th><th ng-repeat="day in settings.daysOfWeek">{{settings.weekDates[$index].getDate()}} {{day}}</th></tr>
-    <tr class="body" ng-repeat='row in directiveProps.rows'>
+    <tr class="bodyWeek">
+      <td>
+        <a href="">
+        All Day
+        </a>
+      </td>
+      <td ng-repeat='col in directiveProps.cols'>
+        <div class="dailyEvents" ng-repeat="event in directiveProps.weeklyEvents[0][col] track by $index">
+          <a href="" ng-class="{visitorAppointment: event.visitorAppointment}">{{event==null?'':event.summary}}</a>
+        </div>
+      </td>
+    </tr>
+    <tr class="bodyWeek" ng-repeat='row in directiveProps.rows'>
       <td>
         <a href="">
           {{row<10?"0" + row:row}}00
@@ -10,7 +22,14 @@
       </td>
       <td ng-repeat='col in directiveProps.cols'>
         <div class="dailyEvents" ng-repeat="event in directiveProps.weeklyEvents[row][col] track by $index">
-          <a href="">{{event==null?"":event}}</a>
+          <a href="" ng-class="{visitorAppointment: event.visitorDetails.visitorAppointment==='true'?true:false}">
+            {{event==null||settings.noEvents?"":event.summary}}
+            <div ng-show="event.visitorDetails.visitorAppointment==='true'?true:false">
+              Name: {{event.visitorDetails.visitorName}}
+              Company: {{event.visitorDetails.visitorCompany}}
+              Number: {{event.visitorDetails.visitorNumber}}
+            </div>
+          </a>
         </div>
       </td>
     </tr>

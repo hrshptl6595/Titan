@@ -13,10 +13,13 @@ visitorSchema = mongoose.Schema({
   visitorEmail: String,
   visitorCompany: String,
   visitorNumber: Number,
+  visitorPicture: String,
+  visitorPurpose: String,
   empUnique: String,
   date: Date,
-  Time: Number,
-  approved: Boolean
+  slot: Number,
+  approved: Boolean,
+  suggestedAlternative: Boolean
 });
 
 module.exports = connV.model("visitor", visitorSchema, "visitors");

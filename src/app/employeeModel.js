@@ -15,7 +15,6 @@ var employeeSchema = new Schema({
   empName: String,
   empEmail: String,
   empDept: String,
-  empDesignation: String,
   empNumber: Number,
   empPicture: String,
   empUnique: String,

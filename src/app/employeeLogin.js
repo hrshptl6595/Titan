@@ -60,6 +60,7 @@ exports.getAccessToken = function(res, credentials, req) {
     }, function(err, response, accessJSON){
       if(err) console.log(err);
       else {
+        console.log(accessJSON);
         accessJSON = JSON.parse(accessJSON);
         request.get("https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + accessJSON.access_token, {
           proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
@@ -67,18 +68,20 @@ exports.getAccessToken = function(res, credentials, req) {
         }, function(e,r, userInfo) {
           if(e) console.log(e);
           else {
+            console.log(userInfo);
             userInfo = JSON.parse(userInfo);
             employee.findOne({"empUnique": userInfo.sub}, function(error, result){
               if(error) console.log(error);
               else if(!result) {
                 var obj = {};
                 fs.readFile("./employeeData.json", function(err, json){
-                  if(err) console.log(err);
                   json = JSON.parse(json);
-                  for(var i=0;i<json.employees.length;i++)
-                  if(userInfo.name.toUpperCase().search(json.employees[i].name.toUpperCase())!=-1) {
-                    obj.empDept = json.employees[i].department;
-                    obj.empName = json.employees[i].name;
+                  for(var i=0;i<json.length;i++)
+                  if(userInfo.email.toUpperCase()===json[i].email){
+                    console.log(json[i]);
+                    obj.empDept = json[i].dept;
+                    obj.empName = json[i].name;
+                    obj.empNumber = json[i].number;
                     callback();
                   }
                 });
@@ -91,9 +94,11 @@ exports.getAccessToken = function(res, credentials, req) {
                     empEmail: (userInfo).email,
                     empPicture: (userInfo).picture,
                     empDept: obj.empDept,
+                    empNumber: obj.empNumber,
                     empUnique: (userInfo).sub
                   });
-                  newEmployee.save(function(){
+                  newEmployee.save(function(e, r){
+                    console.log(r);
                     mapper.dashboard.empLoad = newEmployee.empUnique;
                     res.redirect(301, "http://localhost:8080/dashboard");
                   });
@@ -116,18 +121,13 @@ exports.getAccessToken = function(res, credentials, req) {
 
 exports.typeCheck = function(req, res, next){
   if(req.method === "GET" && !req.headers["x-googleauth"] && !req.query.code)
-    res.render("login");
+    res.render("employee");
   else if(req.method === "GET" && req.headers["x-googleauth"]) {
     var credentials;
     mapper.employeeLogin.fileRead(res, credentials, mapper.employeeLogin.getAuthUrl);
   }
   else if(req.method === "GET" && req.query.code) {
-    // res.writeHead(301, {Location: "http://localhost:8080/barney"});
-    // res.end("draco dormiens nunquam titillandus", callback);
-    callback();
-    function callback(){
-      var credentials;
-      mapper.employeeLogin.fileRead(res, credentials, mapper.employeeLogin.getAccessToken, req);
-    }
+    var credentials;
+    mapper.employeeLogin.fileRead(res, credentials, mapper.employeeLogin.getAccessToken, req);
   }
 };

@@ -1,12 +1,20 @@
 <div ng-show="selected">
   <p>{{settings.monthName()}} {{settings.year}}</p>
+  <p ng-show="showAlternative">Select an alternate date</p>
   <table>
     <tr class="head"><th ng-repeat="day in settings.daysOfWeek">{{day}}</th></tr>
     <tr class="body" ng-repeat='row in directiveProps.rows'>
       <td ng-repeat='col in directiveProps.cols'>
         <a id="date" href="" ng-click="settings.getEmptySlots(directiveProps.monthlyEvents[row][col], directiveProps.dated[row][col])">{{directiveProps.dated[row][col]}}</a>
         <div class="dailyEvents" ng-repeat="event in directiveProps.monthlyEvents[row][col] track by $index">
-          <a href="">{{event==null||settings.noEvents?"":event.summary}}</a>
+          <a href="" ng-class="{visitorAppointment: event.visitorDetails.visitorAppointment==='true'?true:false}">
+            {{event==null||settings.noEvents?"":event.time}}00 {{event==null||settings.noEvents?"":event.summary}}
+            <div ng-show="event.visitorDetails.visitorAppointment==='true'?true:false">
+              Name: {{event.visitorDetails.visitorName}}
+              Company: {{event.visitorDetails.visitorCompany}}
+              Number: {{event.visitorDetails.visitorNumber}}
+            </div>
+          </a>
         </div>
       </td>
     </tr>

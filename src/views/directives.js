@@ -1,26 +1,34 @@
-angular.module("directives", [])
-  .directive("formatTabs", function(){
+angular.module("directives", ["services"])
+  .directive("formatTabs", ["$q", function($q){
     return{
       templateUrl: "formatTabs.html",
       transclude: true,
       scope: {
         settings: "=",
-        events: "="
+        events: "=",
+        setDeferred: "&"
       },
       controller: function($scope) {
         $scope.formatTabs = [];
         $scope.rObject = {};
         this.dated = [];
         var self=this;
-        $scope.settings.promise.then(function(data){
-          $scope.events = data;
-          $scope.rObject = recurrence({
-            settings: $scope.settings,
-            events: $scope.events
+        var formatTabsDef = $q.defer();
+        $scope.$watch("settings.promise", thening);
+        function thening(){
+          $scope.settings.promise.then(function(data){
+            console.log(data);
+            $scope.events = data;
+            $scope.rObject = recurrence({
+              settings: $scope.settings,
+              events: $scope.events
+            });
+            computeDated();
+            $scope.rObject.setup(self.dated);
+            formatTabsDef.resolve();
+            if($scope.setDeferred) $scope.setDeferred({value: $q.defer()});
           });
-          computeDated();
-          $scope.rObject.setup(self.dated);
-        });
+        }
         function computeDated(){
           var firstDay = (new Date($scope.settings.year, $scope.settings.month, 1)).getDay();
           var num=1, x, i, j;
@@ -43,6 +51,13 @@ angular.module("directives", [])
           formatTab.selected = true;
           console.log("select");
         };
+        this.selectMonth = function(){
+          angular.forEach($scope.formatTabs, function(tab){
+            tab.selected = false;
+            if(tab.type==="Month")
+            tab.selected = true;
+          });
+        };
         this.addFormatTab = function(formatTab) {
           if($scope.formatTabs.length === 0)
             $scope.select(formatTab);
@@ -54,7 +69,8 @@ angular.module("directives", [])
           return {
             rObject: $scope.rObject,
             settings: $scope.settings,
-            events: $scope.events
+            events: $scope.events,
+            formatTabsPromise: formatTabsDef.promise
           };
         };
         $scope.previous = function() {
@@ -143,8 +159,8 @@ angular.module("directives", [])
         };
       }
     };
-  })
-  .directive("calendarMonth", function(){
+  }])
+  .directive("calendarMonth", ["sharedPromise", "$q", function(sharedPromise, $q){
     return {
       templateUrl: "calendarMonth.html",
       require: "^formatTabs",
@@ -152,28 +168,36 @@ angular.module("directives", [])
         type: "@"
       },
       link: function(scope, elem, attrs, formatTabsCtrl) {
-        scope.settings = formatTabsCtrl.getObjects().settings;
+        var formatTabsPromise = formatTabsCtrl.getObjects().formatTabsPromise;
         var rObject = {};
-        scope.settings.promise.then(function(){
+        scope.settings = null;
+        formatTabsPromise.then(function(){
           formatTabsCtrl.addFormatTab(scope);
+          scope.settings = formatTabsCtrl.getObjects().settings;
           rObject = formatTabsCtrl.getObjects().rObject;
           scope.events = formatTabsCtrl.getObjects().events;
-          scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
+          sharedPromise.promise.then(function(visitor){
+            scope.showAlternative = true;
+            formatTabsCtrl.selectMonth();
+            scope.settings.sharedPromiseResolved = true;
+            sharedPromise.deferred = $q.defer();
+            sharedPromise.promise = sharedPromise.deferred.promise;
+          });
+          scope.$watchGroup(["settings.month","settings.year"], function(){
+            console.log(scope);
+            console.log("month calendar directive id : " + scope.$id);
+            scope.directiveProps.rows = [], scope.directiveProps.cols = [], scope.directiveProps.monthlyEvents = [];
+            for(i=0;i<7;i++) {
+              if(i<6) scope.directiveProps.rows.push(i);
+              scope.directiveProps.cols.push(i);
+            }
+            scope.directiveProps.dated = formatTabsCtrl.dated;
+            rObject.getMonthlyEvents(scope.directiveProps.monthlyEvents, scope.directiveProps.dated);
+          });
         });
-        function callback() {
-          console.log(scope);
-          console.log("month calendar directive id : " + scope.$id);
-          scope.directiveProps.rows = [], scope.directiveProps.cols = [], scope.directiveProps.monthlyEvents = [];
-          for(i=0;i<7;i++) {
-            if(i<6) scope.directiveProps.rows.push(i);
-            scope.directiveProps.cols.push(i);
-          }
-          scope.directiveProps.dated = formatTabsCtrl.dated;
-          rObject.getMonthlyEvents(scope.directiveProps.monthlyEvents, scope.directiveProps.dated);
-        }
       }
     };
-  })
+  }])
   .directive("calendarWeek", ["$timeout", function($timeout){
     return {
       templateUrl: "calendarWeek.html",
@@ -182,10 +206,11 @@ angular.module("directives", [])
         type: "@"
       },
       link: function(scope, elem, attrs, formatTabsCtrl) {
-        scope.settings = formatTabsCtrl.getObjects().settings;
+        var formatTabsPromise = formatTabsCtrl.getObjects().formatTabsPromise;
         var rObject = {};
-        scope.settings.promise.then(function(){
+        formatTabsPromise.then(function(){
           formatTabsCtrl.addFormatTab(scope);
+          scope.settings = formatTabsCtrl.getObjects().settings;
           rObject = formatTabsCtrl.getObjects().rObject;
           scope.events = formatTabsCtrl.getObjects().events;
           scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
@@ -229,10 +254,10 @@ angular.module("directives", [])
             scope.directiveProps.monthEnd = scope.settings.months[scope.settings.month];
           }
           scope.directiveProps.rows = [], scope.directiveProps.cols = [];
-          for(var i=0;i<24;i++) {
-            if(i<=6) scope.directiveProps.cols.push(i);
+          for(var i=9;i<20;i++)
             scope.directiveProps.rows.push(i);
-          }
+          for(i=0;i<7;i++)
+           scope.directiveProps.cols.push(i);
           rObject.getWeeklyEvents(scope.directiveProps.weeklyEvents);
         }
       }
@@ -246,10 +271,11 @@ angular.module("directives", [])
         type: "@"
       },
       link: function(scope, elem, attrs, formatTabsCtrl) {
-        scope.settings = formatTabsCtrl.getObjects().settings;
+        var formatTabsPromise = formatTabsCtrl.getObjects().formatTabsPromise;
         var rObject = {};
-        scope.settings.promise.then(function(){
+        formatTabsPromise.then(function(){
           formatTabsCtrl.addFormatTab(scope);
+          scope.settings = formatTabsCtrl.getObjects().settings;
           rObject = formatTabsCtrl.getObjects().rObject;
           scope.events = formatTabsCtrl.getObjects().events;
           scope.$watchGroup(["settings.month","settings.year","settings.date"], callback);
@@ -260,29 +286,126 @@ angular.module("directives", [])
           scope.directiveProps.day = scope.settings.daysOfWeek[(new Date(scope.settings.year, scope.settings.month, scope.settings.date)).getDay()];
           scope.directiveProps.rows = [];
           scope.directiveProps.dailyEvents = [];
-          for(var i=0;i<24;i++)
+          for(var i=9;i<20;i++)
             scope.directiveProps.rows.push(i);
-            rObject.getDailyEvents(scope.directiveProps.dailyEvents);
+          rObject.getDailyEvents(scope.directiveProps.dailyEvents);
         }
       }
     };
   }])
+  .directive("visitorDetails", ["$http", "$location", "$q", "sharedPromise", function($http, $location, $q, sharedPromise){
+    return {
+      templateUrl: "visitorDetails.html",
+      controller: function($scope){
+        var visitor = {};
+        $scope.alternativeDate = sharedPromise.date;
+        $scope.eArray = sharedPromise.eArray;
+        $scope.SA = $scope.visitor.suggestedAlternative.toString();
+        $scope.update = function(){
+          if($scope.visitor.approved) {
+            if($scope.visitor.date.getDate() === new Date().getDate() && $scope.visitor.date.getMonth() === new Date().getMonth() && $scope.visitor.date.getFullYear() === new Date().getFullYear()) {
+              visitor.visitorPicture = $scope.visitor.visitorPicture;
+              visitor.visitorName = $scope.visitor.visitorName;
+              visitor.visitorCompany = $scope.visitor.visitorCompany;
+              visitor.visitorEmail = $scope.visitor.visitorEmail;
+              visitor.visitorNumber = $scope.visitor.visitorNumber;
+              visitor.visitorPurpose = $scope.visitor.visitorPurpose;
+              visitor.slot = $scope.visitor.slot;
+              $scope.visitorsToday.push(visitor);
+            }
+            $http({
+              url: "http://localhost:8080/dashboard",
+              method: "POST",
+              data : {
+                visitor: $scope.visitor
+              }
+            }).success(function(data){
+              console.log(data);
+              $scope.pendingReqs.splice($scope.pendingReqs.indexOf($scope.visitor), 1);
+            });
+          }
+        };
+        $scope.never = function(){
+          $http({
+            url: "http://localhost:8080/dashboard",
+            method: "POST",
+            data : {
+              visitor: $scope.visitor
+            }
+          }).success(function(data){
+            console.log(data);
+          });
+        };
+        $scope.alternative = function(){
+          $location.url("/dashboard/calendar");
+          console.log(sharedPromise);
+          sharedPromise.deferred.resolve($scope.visitor);
+        };
+        $scope.submit = function(slot){
+          $scope.visitor.date = $scope.alternativeDate;
+          $scope.visitor.slot = slot;
+          $scope.visitor.approved = null;
+          $scope.visitor.suggestedAlternative = true;
+          $scope.SA = $scope.visitor.suggestedAlternative.toString();
+          $http({
+            url: "http://localhost:8080/dashboard",
+            method: "POST",
+            data : {
+              visitor: $scope.visitor
+            }
+          }).success(function(data){
+            console.log(data);
+            // $scope.events.push(data);
+            // $scope.pendingReqs.splice($scope.pendingReqs.indexOf($scope.visitor), 1);
+          });
+        }
+      },
+      link: function(scope, elem, attrs){
+        console.log(scope);
+        if(scope.visitor.isVisitorToday==null) scope.visitor.isVisitorToday = false;
+        scope.visitor.date = new Date(scope.visitor.date);
+      }
+    }
+  }])
   .directive("numCheck", function(){
     return {
-      require: 'ngModel',
-      link: function(scope, elem, attrs, ctrl){
-        ctrl.$validators.numCheck = function(modelValue, viewValue){
+      require: "^ngModel",
+      link: function(scope, elem, attrs, ctrl) {
+        ctrl.$validators.numCheck = function(modelValue, viewValue) {
           if(ctrl.$isEmpty(modelValue))
             return true;
-          else if(viewValue.length === 10)
-            return true;
+          else if(angular.isNumber(parseInt(modelValue)) && modelValue.length===10)
+              return true;
           else
             return false;
         };
       }
-    };
+    }
   })
-  .directive("employeeCheck", ["$http", "$q", "$timeout", function($http, $q, $timeout){
+  .directive("employeeList", ["$http", "$q", function($http, $q){
+    return {
+      require: "^ngModel",
+      scope: {
+        list: "="
+      },
+      link: function(scope, elem, attrs, ctrl){
+        ctrl.$asyncValidators.employeeList = function(modelValue, viewValue){
+          console.log("running employeeList!");
+          var def = $q.defer();
+          $http.get("http://localhost:8080/employees?department=" + viewValue.toUpperCase())
+            .then(function(data){
+              console.log(data);
+              scope.list = data.data;
+              def.resolve();
+            }, function(){
+              def.reject();
+            });
+          return def.promise;
+        };
+      }
+    }
+  }])
+  .directive("employeeCheck", ["$http", "$q", function($http, $q){
     return {
       require: "ngModel",
       scope: {
@@ -291,46 +414,74 @@ angular.module("directives", [])
       },
       link: function(scope, elem, attrs, ctrl){
         ctrl.$asyncValidators.employeeCheck = function(modelValue, viewValue){
-          console.log("running!");
+          console.log("running employeeCheck!");
           var def = $q.defer();
-          $timeout(function(){
-            $http.get("http://localhost:8080/employees?name=" + viewValue)
+          $http.get("http://localhost:8080/employees?name=" + viewValue)
             .then(function(data){
               console.log(data);
               scope.events = data.data.empEvents;
+              scope.init.empUnique = data.data.empDetails.empUnique;
               scope.init.deferred.resolve(data.data.empEvents);
               scope.init.showCalendar = true;
+              console.log(scope.init);
+              // scope.getPromise();
               def.resolve();
             }, function(){
               def.reject();
-            })
-          }, 5000);
+            });
           return def.promise;
         }
       }
     };
   }])
-  .directive("visitorCheck", ["$http", function($http){
-    return{
-      require: "ngModel",
-      link: function(scope, elem, attrs, ctrl){
-        ctrl.$validators.visitorCheck = function(modelValue, viewValue){
-          if(ctrl.$isEmpty(modelValue))
-            return true;
-          else
-            $http.post("http://localhost:8080/visitorAppointment",{
-              visitorName: viewValue
-            })
-            .success(function(result){
-              if (result) {
-                scope.company = result.visitorCompany;
-                scope.email = result.visitorEmail;
-                scope.contactNumber = result.visitorNumber;
-                return true;
+  .directive("disablebuttons", function(){
+    return {
+      scope: true,
+      link: function(scope, elem, attrs){
+        scope.disableTimings = true;
+        scope.$watch("eArray", function(){
+          if(scope.eArray){
+            if(new Date(scope.settings.year, scope.settings.month, scope.thatDate)<new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())){
+              scope.disableTimings = true;
+              console.log("wtf");
+            }
+            else if(new Date(scope.settings.year, scope.settings.month, scope.thatDate)>=new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())) {
+              if(scope.eArray.length===0) {
+                scope.disableTimings = false;
+                console.log("yo");
               }
-              else
-                return false;
+              else {
+                for(var i=0;i<scope.eArray.length;i++)
+                if(scope.eArray[i].time===scope.slot || scope.eArray[i].isDate)
+                scope.disableTimings = true;
+                else
+                scope.disableTimings = false;
+              }
+            }
+          }
+        });
+      }
+    };
+  })
+  .directive("confirm", ["$http", "$q", function($http, $q){
+    return {
+      require: "^ngModel",
+      scope: {
+        alternatives: "="
+      },
+      link: function(scope, elem, attrs, ctrl){
+        var def = $q.defer();
+        ctrl.$asyncValidators.confirm = function(modelValue, viewValue){
+          console.log("running confirm");
+          $http.get("http://localhost:8080/visitorAppointment?email=" + viewValue)
+            .then(function(data){
+              console.log(data);
+              scope.alternatives = (data.data);
+              def.resolve();
+            }, function(){
+              def.reject();
             });
+          return def.promise;
         };
       }
     };

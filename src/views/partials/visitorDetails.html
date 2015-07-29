@@ -8,33 +8,50 @@
   }
 </style>
 
-<div class="visitor" ng-show="visitor.approved===null||visitor.approved===false?true:false">
-  <img ng-src="data:image/jpeg;base64, {{visitor.visitorPicture}}">
-  <p>Name: {{visitor.visitorName}}</p>
-  <p>Company: {{visitor.visitorCompany}}</p>
-  <p>Email: {{visitor.visitorEmail}}</p>
-  <p>Contact Number: {{visitor.visitorNumber}}</p>
-  <p>Purpose: {{visitor.visitorPurpose}}</p>
-  <p ng-hide="visitor.isVisitorToday">Date: {{visitor.date | date:'dd-MM-yyyy'}}</p>
-  <p>Time: {{visitor.slot}}00</p>
-  <div ng-hide="visitor.isVisitorToday">
-    <label>Approve?</label>
-    <input type="radio" ng-value="true" ng-model="visitor.approved" ng-click="update()">Yes</input>
-    <input type="radio" ng-value="false" ng-model="visitor.approved" ng-click="update()">No</input>
-    <p ng-show="visitor.approved">Meeting confirmed!</p>
-    <div ng-show="visitor.approved===false&&!date?true:false">
-      <p>Okay so what do you want to do?</p>
-      <button ng-click="never()">I don't wanna meet this dude</button>
-      <button ng-click="alternative()">Let me choose a convenient date and time</button>
+<div ng-switch="SA">
+  <div ng-switch-when="false">
+    <div class="visitor" ng-show="visitor.approved===null||visitor.approved===false?true:false">
+      <img ng-src="data:image/jpeg;base64, {{visitor.visitorPicture}}">
+      <p>Name: {{visitor.visitorName}}</p>
+      <p>Company: {{visitor.visitorCompany}}</p>
+      <p>Email: {{visitor.visitorEmail}}</p>
+      <p>Contact Number: {{visitor.visitorNumber}}</p>
+      <p>Purpose: {{visitor.visitorPurpose}}</p>
+      <p ng-hide="visitor.isVisitorToday">Date: {{visitor.date | date:'dd-MM-yyyy'}}</p>
+      <p>Time: {{visitor.slot}}00</p>
+      <div ng-hide="visitor.isVisitorToday">
+        <label>Approve?</label>
+        <input type="radio" ng-value="true" ng-model="visitor.approved" ng-click="update()">Yes</input>
+        <input type="radio" ng-value="false" ng-model="visitor.approved" ng-click="update()">No</input>
+        <p ng-show="visitor.approved">Meeting confirmed!</p>
+        <div ng-show="visitor.approved===false&&!date?true:false">
+          <p>Okay so what do you want to do?</p>
+          <button ng-click="never()">I don't wanna meet this dude</button>
+          <button ng-click="alternative()">Let me choose a convenient date and time</button>
+        </div>
+        <div ng-show="alternativeDate">
+          <p>Alternate Date : {{alternativeDate | date:'dd-MM-yyyy'}}</p>
+          <label>Alternate Time</label>
+          <select ng-model="slot" ng-change="submit(slot)">
+            <option ng-repeat="s in [9,10,11,12,13,14,15,16,17,18]" value="{{s}}">{{s}}</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <div ng-show="alternativeDate">
-      <p>Alternate Date : {{alternativeDate | date:'dd-MM-yyyy'}}</p>
-      <label>Alternate Time</label>
-      <select ng-model="slot" ng-change="submit(slot)">
-        <option ng-repeat="s in [9,10,11,12,13,14,15,16,17,18]" value="{{s}}">{{s}}</option>
-      </select>
+  </div>
+  <div ng-switch-when="true">
+    <div class="visitor" ng-show="visitor.approved===null||visitor.approved===false?true:false">
+      <p>Name: {{visitor.visitorName}}</p>
+      <p>Company: {{visitor.visitorCompany}}</p>
+      <p>Email: {{visitor.visitorEmail}}</p>
+      <p>Contact Number: {{visitor.visitorNumber}}</p>
+      <p>Purpose: {{visitor.visitorPurpose}}</p>
+      <p ng-hide="visitor.isVisitorToday">Date: {{visitor.date | date:'dd-MM-yyyy'}}</p>
+      <p>Time: {{visitor.slot}}00</p>
+      <p>Awaiting confirmation from {{visitor.visitorName}}  
     </div>
   </div>
 </div>
+
 
 <!-- <button ng-show="visitor.showUndo" ng-click="undoAppointment()">Undo Appointment</button> -->

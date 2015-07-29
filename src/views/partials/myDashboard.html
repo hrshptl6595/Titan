@@ -1,0 +1,30 @@
+<style>
+  .pendingRequests, .todaysRequests{
+    float: left;
+    font-size: 25px;
+    margin-left: 25px;
+    padding: 20px;
+    text-align: center;
+    width: 600px;
+    min-height: 400px;
+    height: auto;
+  }
+  span{
+    text-decoration: underline;
+  }
+  p{
+    margin: 20px;
+    text-decoration: none;
+  }
+</style>
+
+<div class="pendingRequests">
+  <span>Pending Requests</span>
+  <visitor-details ng-repeat="visitor in pendingReqs"></visitor-details> <br />
+  <p>{{pendingReqs.length===0?'You have no pending requests to attend to':''}}</p>
+</div>
+<div class="todaysRequests">
+  <span>Your visitors today</span>
+  <visitor-details ng-repeat="visitor in visitorsToday" ng-init="visitor.isVisitorToday = true"></visitor-details> <br />
+  <p>{{visitorsToday.length===0?'You have no visitors today':''}}</p>
+</div>

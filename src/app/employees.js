@@ -11,19 +11,33 @@ exports.getEmployees = function(req, res, next) {
   var query = url.parse(req.url, true).query;
   console.log(query);
   var events = [], details = {};
-  employee.findOne({"empName":query.name}, function(err, result){
-    mapper.calendar.refreshToken(result, events, callback);
-    function callback() {
-      result.empAccessToken = null;
-      result.empRefreshToken = null;
-      result.empIDToken = null;
-      result.nextSyncToken = null;
-      console.log(result);
-      console.log(events);
-      res.json({
-        empDetails: result,
-        empEvents: events
-      });
-    }
-  });
+  if(query.name) {
+    var regex = new RegExp("^" + query.name + "$", "i");
+    employee.findOne({"empName": regex}, "empName empEmail empPicture empDept empNumber empUnique", function(err, result){
+      mapper.calendar.refreshToken(result, events, callback);
+      function callback() {
+        result.empAccessToken = null;
+        result.empRefreshToken = null;
+        result.empIDToken = null;
+        result.nextSyncToken = null;
+        console.log(result);
+        console.log(events);
+        res.json({
+          empDetails: result,
+          empEvents: events
+        });
+      }
+    });
+  }
+  else if(query.department) {
+    var regexp = new RegExp("/" + query.department + "/");
+    employee.find({"empDept": query.department}, function(err, results){
+      for(var i=0;i<results.length;i++) {
+        results[i] = {
+          empName: results[i].empName
+        };
+      }
+      res.json(results);
+    });
+  }
 };
