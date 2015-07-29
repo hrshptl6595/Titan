@@ -1,7 +1,9 @@
 var mongoose = require("mongoose");
+// var host = "localhost";
+var host = "titan-scheduler.in";
 var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
                 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
-var mongooseUriV = "mongodb://localhost/visitors";
+var mongooseUriV = "mongodb://" + host + "/visitors";
 
 var connV = mongoose.createConnection(mongooseUriV, options);
 connV.once("open", function() {

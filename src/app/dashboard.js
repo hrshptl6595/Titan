@@ -4,6 +4,8 @@ var jwt = require("jsonwebtoken");
 var fs = require("fs");
 var employee = require("./employeeModel");
 var visitor = require("./visitorModel");
+// var host = "localhost";
+var host = "titan-scheduler.in";
 
 exports.empLoad = null;
 
@@ -96,7 +98,7 @@ exports.verification = function(token, res, callback) {
     if((err && err.name==="TokenExpiredError") || (decoded.empUnique==null)) {
       res.clearCookie("accessToken");
       res.setHeader("x-redirect","true");
-      res.redirect(301, "http://localhost:8080/employeeLogin");
+      res.redirect(301, "http://" + host + ":8080/employeeLogin");
       console.log("redirecting...........");
     }
     else
