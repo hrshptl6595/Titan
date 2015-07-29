@@ -11,7 +11,7 @@ angular.module("controllers", ["ngCookies", "services"])
   .controller("loginController", ["$scope", "$http", function($scope, $http){
     var request = {
       method: "GET",
-      url: "http://localhost:8080/employeeLogin",
+      url: "http://titan-scheduler.in:8080/employeeLogin",
       headers: {
         "x-googleauth": "exists"
       }
@@ -22,7 +22,7 @@ angular.module("controllers", ["ngCookies", "services"])
   }])
   .controller("dashboardController", ["$scope", "employee", "$http", "$cookies", "$location", function($scope, employee, $http, $cookies, $location){
     $http({
-      url: "http://localhost:8080/dashboard",
+      url: "http://titan-scheduler.in:8080/dashboard",
       method: "GET",
       headers: {
         "x-employee": "exists"
@@ -61,7 +61,7 @@ angular.module("controllers", ["ngCookies", "services"])
   .controller("calendarController", ["$scope", "$q", "sharedPromise", "$location", "$http", "employee", "$cookies", function($scope, $q, sharedPromise, $location, $http, employee, $cookies){
     var deferred = $q.defer();
     $http({
-      url: "http://localhost:8080/dashboard",
+      url: "http://titan-scheduler.in:8080/dashboard",
       method: "GET",
       headers: {
         "x-calendar": "exists"
@@ -237,7 +237,7 @@ angular.module("controllers", ["ngCookies", "services"])
       $scope.submitted = true;
       if($scope.form.$valid)
         $http({
-          url: "http://localhost:8080/visitorAppointment",
+          url: "http://titan-scheduler.in:8080/visitorAppointment",
           method: "POST",
           data: {
             visitorPicture: $scope.profilePic,
@@ -259,7 +259,7 @@ angular.module("controllers", ["ngCookies", "services"])
       visitor.approved = true;
       visitor.suggestedAlternative = false;
       $http({
-        url: "http://localhost:8080/dashboard",
+        url: "http://titan-scheduler.in:8080/dashboard",
         method: "POST",
         data : {
           visitor: visitor
@@ -272,7 +272,7 @@ angular.module("controllers", ["ngCookies", "services"])
       visitor.approved = false;
       visitor.suggestedAlternative = false;
       $http({
-        url: "http://localhost:8080/dashboard",
+        url: "http://titan-scheduler.in:8080/dashboard",
         method: "POST",
         data : {
           visitor: visitor

@@ -314,7 +314,7 @@ angular.module("directives", ["services"])
               $scope.visitorsToday.push(visitor);
             }
             $http({
-              url: "http://localhost:8080/dashboard",
+              url: "http://titan-scheduler.in:8080/dashboard",
               method: "POST",
               data : {
                 visitor: $scope.visitor
@@ -327,7 +327,7 @@ angular.module("directives", ["services"])
         };
         $scope.never = function(){
           $http({
-            url: "http://localhost:8080/dashboard",
+            url: "http://titan-scheduler.in:8080/dashboard",
             method: "POST",
             data : {
               visitor: $scope.visitor
@@ -348,7 +348,7 @@ angular.module("directives", ["services"])
           $scope.visitor.suggestedAlternative = true;
           $scope.SA = $scope.visitor.suggestedAlternative.toString();
           $http({
-            url: "http://localhost:8080/dashboard",
+            url: "http://titan-scheduler.in:8080/dashboard",
             method: "POST",
             data : {
               visitor: $scope.visitor
@@ -392,7 +392,7 @@ angular.module("directives", ["services"])
         ctrl.$asyncValidators.employeeList = function(modelValue, viewValue){
           console.log("running employeeList!");
           var def = $q.defer();
-          $http.get("http://localhost:8080/employees?department=" + viewValue.toUpperCase())
+          $http.get("http://titan-scheduler.in:8080/employees?department=" + viewValue.toUpperCase())
             .then(function(data){
               console.log(data);
               scope.list = data.data;
@@ -416,7 +416,7 @@ angular.module("directives", ["services"])
         ctrl.$asyncValidators.employeeCheck = function(modelValue, viewValue){
           console.log("running employeeCheck!");
           var def = $q.defer();
-          $http.get("http://localhost:8080/employees?name=" + viewValue)
+          $http.get("http://titan-scheduler.in:8080/employees?name=" + viewValue)
             .then(function(data){
               console.log(data);
               scope.events = data.data.empEvents;
@@ -473,7 +473,7 @@ angular.module("directives", ["services"])
         var def = $q.defer();
         ctrl.$asyncValidators.confirm = function(modelValue, viewValue){
           console.log("running confirm");
-          $http.get("http://localhost:8080/visitorAppointment?email=" + viewValue)
+          $http.get("http://titan-scheduler.in:8080/visitorAppointment?email=" + viewValue)
             .then(function(data){
               console.log(data);
               scope.alternatives = (data.data);
