@@ -13,7 +13,7 @@ exports.getEmployees = function(req, res, next) {
   var events = [], details = {};
   if(query.name) {
     var regex = new RegExp("^" + query.name + "$", "i");
-    employee.findOne({"empName": regex}, "empName empEmail empPicture empDept empNumber empUnique", function(err, result){
+    employee.findOne({"empName": regex}, function(err, result){
       mapper.calendar.refreshToken(result, events, callback);
       function callback() {
         result.empAccessToken = null;

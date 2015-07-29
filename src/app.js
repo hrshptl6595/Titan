@@ -1,6 +1,5 @@
 var express = require("express");
 var mapper = require("./app/mapper");
-var employee = require("./app/employeeModel");
 var request = require("request");
 var bodyParser = require('body-parser');
 var cookieParser = require("cookie-parser");
@@ -18,8 +17,8 @@ app
     console.log(req.method, req.url);
     next();
   })
-  .use(express.static(__dirname + "/views"))
-  .use(express.static(__dirname + "/views/partials"))
+  .use(express.static("views"))
+  .use(express.static("views/partials"))
   .use("/visitorAppointment", mapper.visitorAppointment.typeCheck)
   .use("/employeeLogin", mapper.employeeLogin.typeCheck)
   .use("/dashboard", mapper.dashboard.typeCheck)

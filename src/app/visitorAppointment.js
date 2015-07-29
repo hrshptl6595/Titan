@@ -54,8 +54,8 @@ exports.insertAppointment = function(req, res, next) {
   });
   if(req.body.visitorPicture)
     request.get(req.body.visitorPicture, {
-      proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
-      // proxy: null,
+      // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
+      proxy: null,
       encoding: null
     }, function(err, res, body){
       console.log(res.statusCode);

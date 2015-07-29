@@ -7,8 +7,8 @@ var fs = require("fs");
 exports.refreshToken = function(result, events, callback) {
   var token;
   request.post("https://www.googleapis.com/oauth2/v3/token", {
-    proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
-    // proxy: null,
+    // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
+    proxy: null,
     form: {
       refresh_token: result.empRefreshToken,
       client_id: "831835373457-78b2j3qbmj0mo2af1l243qjt8bked26l.apps.googleusercontent.com",
@@ -39,8 +39,8 @@ exports.getEvents = function(events, token, callback) {
   };
   var getUrl = "https://www.googleapis.com/calendar/v3/calendars/primary/events?" + querystring.stringify(options);
   request.get(getUrl, {
-    proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-    // proxy: null
+    // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+    proxy: null
   }, function(err, r, body){
     body = JSON.parse(body);
     var nextPageToken = body.nextPageToken;
@@ -49,8 +49,8 @@ exports.getEvents = function(events, token, callback) {
         events.push(body.items[i]);
     while(nextPageToken) {
       request.get(getUrl + "&nextPageToken=" + body.nextPageToken, {
-        proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-        // proxy: null
+        // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+        proxy: null
       }, function(err,r,body){
         nextPageToken = body.nextPageToken;
         for(var i=0; i<body.items.length; i++)
@@ -77,8 +77,8 @@ exports.insertEvent = function(visitor, token, callback){
   visitor.date = new Date(visitor.date);
   var postUrl = "https://www.googleapis.com/calendar/v3/calendars/primary/events?" + querystring.stringify(options);
   request.post(postUrl, {
-    proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
-    // proxy: null,
+    // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
+    proxy: null,
     json: {
       "start": {
         "dateTime": new Date(visitor.date.getFullYear(), visitor.date.getMonth(), visitor.date.getDate(), visitor.slot).toISOString(),
@@ -124,8 +124,8 @@ exports.deleteEvent = function(visitor, token, callback) {
   };
   var deleteUrl = "https://www.googleapis.com/calendar/v3/calendars/primary/events/" + visitor.calendarID + "?" + querystring.stringify(options);
   request.del(deleteUrl, {
-    proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-    // proxy: null,
+    // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+    proxy: null,
   }, function(err, response, body){
     callback(null);
   })

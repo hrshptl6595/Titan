@@ -7,8 +7,8 @@ var employee = require("./employeeModel");
 
 exports.fileRead = function(res, credentials, callback, req) {
   request.get("https://accounts.google.com/.well-known/openid-configuration", {
-    proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-    // proxy: null
+    // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+    proxy: null
   }, function(err, response, body){
     if(err) {
       console.log(err);
@@ -48,8 +48,8 @@ exports.getAuthUrl = function(res, credentials) {
 exports.getAccessToken = function(res, credentials, req) {
   if(credentials.client_id === (jwt.verify(req.query.state, "moony wormtail padfoot prongs")).client_id) {
     request.post(credentials.token_endpoint, {
-      proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
-      // proxy: null,
+      // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/",
+      proxy: null,
       form: {
         code: req.query.code,
         client_id: credentials.client_id,
@@ -63,8 +63,8 @@ exports.getAccessToken = function(res, credentials, req) {
         console.log(accessJSON);
         accessJSON = JSON.parse(accessJSON);
         request.get("https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + accessJSON.access_token, {
-          proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
-          // proxy: null
+          // proxy: "http://tilge%5Cinnovedge2:titan%40123@172.50.6.230:8080/"
+          proxy: null
         }, function(e,r, userInfo) {
           if(e) console.log(e);
           else {
