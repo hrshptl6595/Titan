@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
-var host = require("./global");
-var mongooseUriV = "mongodb://" + host + "visitors";
+var mongooseUriV = "mongodb://localhost/visitors";
 
 var connV = mongoose.createConnection(mongooseUriV);
 connV.once("open", function() {
