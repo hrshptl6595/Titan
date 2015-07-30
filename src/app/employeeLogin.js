@@ -4,6 +4,7 @@ var url = require("url");
 var request = require("request");
 var jwt = require("jsonwebtoken");
 var fs = require("fs");
+var path = require("path");
 var employee = require("./employeeModel");
 var index = 1;
 
@@ -76,8 +77,12 @@ exports.getAccessToken = function(res, credentials, req) {
               if(error) console.log(error);
               else if(!result) {
                 var obj = {};
-                fs.readFile("./employeeData.json", function(err, json){
+                fs.readFile(process.cwd() + "/src/app/data.json", function(err, json){
+                  console.log("reading employee data");
+                  console.log(err);
                   json = JSON.parse(json);
+                  console.log(json);
+                  console.log(userInfo);
                   for(var i=0;i<json.length;i++)
                   if(userInfo.email.toUpperCase()===json[i].email){
                     console.log(json[i]);
