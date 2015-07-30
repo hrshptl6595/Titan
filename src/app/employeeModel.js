@@ -1,7 +1,6 @@
 var mongoose = require("mongoose");
-// var host = "localhost";
-var host = "titan-scheduler.in";
-var mongooseUriE = "mongodb://" + host + "/employees";
+var host = require("./global");
+var mongooseUriE = "mongodb://" + host + "employees";
 
 var connE = mongoose.createConnection(mongooseUriE);
 connE.once("open", function() {

@@ -1,5 +1,6 @@
 var mapper = require("./mapper");
 var url = require("url");
+var host = require("./global");
 var employee = require("./employeeModel");
 
 exports.typeCheck = function(req, res, next){

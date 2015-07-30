@@ -1,4 +1,5 @@
 var request = require("request");
+var host = require("./global");
 var employee = require("./employeeModel");
 var mapper = require("./mapper");
 var querystring = require("querystring");

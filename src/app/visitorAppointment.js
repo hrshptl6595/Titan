@@ -1,4 +1,5 @@
 var visitor = require("./visitorModel");
+var host = require("./global");
 var employee = require("./employeeModel");
 var mapper = require("./mapper");
 var request = require("request");
@@ -12,8 +13,6 @@ var transporter = nodemailer.createTransport({
     pass: "titan@2014"
   }
 });
-// var host = "localhost";
-var host = "titan-scheduler.in";
 
 exports.typeCheck = function(req, res, next) {
   var query = url.parse(req.url, true).query;
@@ -92,7 +91,7 @@ exports.sendConfMailer = function(visitor){
 exports.sendAlternativeMailer = function(employee, visitor){
   console.log(visitor);
   console.log(employee);
-  var str = employee.empName + " is unable to schedule the meeting to the said date and time due to unavoidable circumstances. To view the suggested alternative and approve, follow the link : " + "http://"+ host + ":8080/visitorAppointment/confirm";
+  var str = employee.empName + " is unable to schedule the meeting to the said date and time due to unavoidable circumstances. To view the suggested alternative and approve, follow the link : " + "http://"+ host + "visitorAppointment/confirm";
   transporter.sendMail({
     from: "cts.titancompany@gmail.com",
     to: visitor.visitorEmail,

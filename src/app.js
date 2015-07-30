@@ -1,3 +1,4 @@
+var host = require("./app/global");
 var express = require("express");
 var mapper = require("./app/mapper");
 var request = require("request");

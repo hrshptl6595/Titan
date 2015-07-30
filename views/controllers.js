@@ -8,10 +8,10 @@ angular.module("controllers", ["ngCookies", "services"])
         $scope.view = "dashboard";
     });
   }])
-  .controller("loginController", ["$scope", "$http", function($scope, $http){
+  .controller("loginController", ["$scope", "$http", "global", function($scope, $http, global){
     var request = {
       method: "GET",
-      url: "http://titan-scheduler.in:8080/employeeLogin",
+      url: "http://" + global.host + "employeeLogin",
       headers: {
         "x-googleauth": "exists"
       }
@@ -20,9 +20,9 @@ angular.module("controllers", ["ngCookies", "services"])
       $scope.googleAuth = data.encodedURI;
     });
   }])
-  .controller("dashboardController", ["$scope", "employee", "$http", "$cookies", "$location", function($scope, employee, $http, $cookies, $location){
+  .controller("dashboardController", ["$scope", "employee", "$http", "$cookies", "$location", "global", function($scope, employee, $http, $cookies, $location, global){
     $http({
-      url: "http://titan-scheduler.in:8080/dashboard",
+      url: "http://" + global.host + "dashboard",
       method: "GET",
       headers: {
         "x-employee": "exists"
@@ -58,10 +58,10 @@ angular.module("controllers", ["ngCookies", "services"])
       }
     ];
   }])
-  .controller("calendarController", ["$scope", "$q", "sharedPromise", "$location", "$http", "employee", "$cookies", function($scope, $q, sharedPromise, $location, $http, employee, $cookies){
+  .controller("calendarController", ["$scope", "$q", "sharedPromise", "$location", "$http", "employee", "$cookies", "global", function($scope, $q, sharedPromise, $location, $http, employee, $cookies, global){
     var deferred = $q.defer();
     $http({
-      url: "http://titan-scheduler.in:8080/dashboard",
+      url: "http://"+ global.host + "dashboard",
       method: "GET",
       headers: {
         "x-calendar": "exists"
@@ -125,7 +125,7 @@ angular.module("controllers", ["ngCookies", "services"])
       }
     };
   }])
-  .controller("visitorController", ["$scope", "$q", "$http", function($scope, $q, $http){
+  .controller("visitorController", ["$scope", "$q", "$http", "global", function($scope, $q, $http, global){
     $scope.profilePic = "profile.jpg";
     $scope.init = {
       deferred: $q.defer(),
@@ -237,7 +237,7 @@ angular.module("controllers", ["ngCookies", "services"])
       $scope.submitted = true;
       if($scope.form.$valid)
         $http({
-          url: "http://titan-scheduler.in:8080/visitorAppointment",
+          url: "http://"+ global.host + "visitorAppointment",
           method: "POST",
           data: {
             visitorPicture: $scope.profilePic,
@@ -253,13 +253,13 @@ angular.module("controllers", ["ngCookies", "services"])
         });
     };
   }])
-  .controller("confirmController", ["$scope", "$http", function($scope, $http){
+  .controller("confirmController", ["$scope", "$http", "global", function($scope, $http, global){
     $scope.alternatives = {};
     $scope.okay = function(visitor){
       visitor.approved = true;
       visitor.suggestedAlternative = false;
       $http({
-        url: "http://titan-scheduler.in:8080/dashboard",
+        url: "http://"+ global.host + "dashboard",
         method: "POST",
         data : {
           visitor: visitor
@@ -272,7 +272,7 @@ angular.module("controllers", ["ngCookies", "services"])
       visitor.approved = false;
       visitor.suggestedAlternative = false;
       $http({
-        url: "http://titan-scheduler.in:8080/dashboard",
+        url: "http://"+ global.host + "dashboard",
         method: "POST",
         data : {
           visitor: visitor

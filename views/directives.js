@@ -293,7 +293,7 @@ angular.module("directives", ["services"])
       }
     };
   }])
-  .directive("visitorDetails", ["$http", "$location", "$q", "sharedPromise", function($http, $location, $q, sharedPromise){
+  .directive("visitorDetails", ["$http", "$location", "$q", "sharedPromise", "global", function($http, $location, $q, sharedPromise, global){
     return {
       templateUrl: "visitorDetails.html",
       controller: function($scope){
@@ -314,7 +314,7 @@ angular.module("directives", ["services"])
               $scope.visitorsToday.push(visitor);
             }
             $http({
-              url: "http://titan-scheduler.in:8080/dashboard",
+              url: "http://"+ global.host + "dashboard",
               method: "POST",
               data : {
                 visitor: $scope.visitor
@@ -327,7 +327,7 @@ angular.module("directives", ["services"])
         };
         $scope.never = function(){
           $http({
-            url: "http://titan-scheduler.in:8080/dashboard",
+            url: "http://"+ global.host + "dashboard",
             method: "POST",
             data : {
               visitor: $scope.visitor
@@ -348,7 +348,7 @@ angular.module("directives", ["services"])
           $scope.visitor.suggestedAlternative = true;
           $scope.SA = $scope.visitor.suggestedAlternative.toString();
           $http({
-            url: "http://titan-scheduler.in:8080/dashboard",
+            url: "http://"+ global.host + "dashboard",
             method: "POST",
             data : {
               visitor: $scope.visitor
@@ -382,7 +382,7 @@ angular.module("directives", ["services"])
       }
     }
   })
-  .directive("employeeList", ["$http", "$q", function($http, $q){
+  .directive("employeeList", ["$http", "$q", "global", function($http, $q, global){
     return {
       require: "^ngModel",
       scope: {
@@ -392,7 +392,7 @@ angular.module("directives", ["services"])
         ctrl.$asyncValidators.employeeList = function(modelValue, viewValue){
           console.log("running employeeList!");
           var def = $q.defer();
-          $http.get("http://titan-scheduler.in:8080/employees?department=" + viewValue.toUpperCase())
+          $http.get("http://"+ global.host + "employees?department=" + viewValue.toUpperCase())
             .then(function(data){
               console.log(data);
               scope.list = data.data;
@@ -405,7 +405,7 @@ angular.module("directives", ["services"])
       }
     }
   }])
-  .directive("employeeCheck", ["$http", "$q", function($http, $q){
+  .directive("employeeCheck", ["$http", "$q", "global", function($http, $q, global){
     return {
       require: "ngModel",
       scope: {
@@ -416,7 +416,7 @@ angular.module("directives", ["services"])
         ctrl.$asyncValidators.employeeCheck = function(modelValue, viewValue){
           console.log("running employeeCheck!");
           var def = $q.defer();
-          $http.get("http://titan-scheduler.in:8080/employees?name=" + viewValue)
+          $http.get("http://"+ global.host + "employees?name=" + viewValue)
             .then(function(data){
               console.log(data);
               scope.events = data.data.empEvents;
@@ -463,7 +463,7 @@ angular.module("directives", ["services"])
       }
     };
   })
-  .directive("confirm", ["$http", "$q", function($http, $q){
+  .directive("confirm", ["$http", "$q", "global", function($http, $q, global){
     return {
       require: "^ngModel",
       scope: {
@@ -473,7 +473,7 @@ angular.module("directives", ["services"])
         var def = $q.defer();
         ctrl.$asyncValidators.confirm = function(modelValue, viewValue){
           console.log("running confirm");
-          $http.get("http://titan-scheduler.in:8080/visitorAppointment?email=" + viewValue)
+          $http.get("http://"+ global.host + "visitorAppointment?email=" + viewValue)
             .then(function(data){
               console.log(data);
               scope.alternatives = (data.data);

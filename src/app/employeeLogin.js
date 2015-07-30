@@ -1,11 +1,11 @@
 var mapper = require("./mapper");
+var host = require("./global");
 var url = require("url");
 var request = require("request");
 var jwt = require("jsonwebtoken");
 var fs = require("fs");
 var employee = require("./employeeModel");
-// var host = "localhost";
-var host = "titan-scheduler.in";
+var index = 1;
 
 exports.fileRead = function(res, credentials, callback, req) {
   request.get("https://accounts.google.com/.well-known/openid-configuration", {
@@ -20,7 +20,7 @@ exports.fileRead = function(res, credentials, callback, req) {
       credentials = (JSON.parse(body) || body);
       credentials.client_id = "831835373457-78b2j3qbmj0mo2af1l243qjt8bked26l.apps.googleusercontent.com";
       credentials.client_secret = "LQ6VmO-xP1iLte8o_KkYkCc_";
-      credentials.redirect_uris = ["http://localhost:8080/employeeLogin, http://titan-scheduler:8080/employeeLogin"];
+      credentials.redirect_uris = ["http://localhost/employeeLogin", "http://titan-scheduler.in/employeeLogin"];
       credentials.state = jwt.sign({client_id: credentials.client_id}, "moony wormtail padfoot prongs");
       callback(res, credentials, req);
     }
@@ -30,7 +30,7 @@ exports.fileRead = function(res, credentials, callback, req) {
 exports.getAuthUrl = function(res, credentials) {
   var authRequest = {
     client_id: credentials.client_id,
-    redirect_uri: credentials.redirect_uris[0],
+    redirect_uri: credentials.redirect_uris[index],
     response_type: "code",
     scope: "openid profile email https://www.googleapis.com/auth/calendar",
     state: credentials.state,
@@ -56,7 +56,7 @@ exports.getAccessToken = function(res, credentials, req) {
         code: req.query.code,
         client_id: credentials.client_id,
         client_secret: credentials.client_secret,
-        redirect_uri: credentials.redirect_uris[0],
+        redirect_uri: credentials.redirect_uris[index],
         grant_type: "authorization_code"
       }
     }, function(err, response, accessJSON){
@@ -102,7 +102,7 @@ exports.getAccessToken = function(res, credentials, req) {
                   newEmployee.save(function(e, r){
                     console.log(r);
                     mapper.dashboard.empLoad = newEmployee.empUnique;
-                    res.redirect(301, "http://" + host + ":8080/dashboard");
+                    res.redirect(301, "http://" + host + "dashboard");
                   });
                 }
               }
@@ -110,7 +110,7 @@ exports.getAccessToken = function(res, credentials, req) {
                 result.empAccessToken = (accessJSON).access_token;
                 result.save(function(){
                   mapper.dashboard.empLoad = result.empUnique;
-                  res.redirect(301, "http://" + host + ":8080/dashboard");
+                  res.redirect(301, "http://" + host + "dashboard");
                 });
               }
             });
